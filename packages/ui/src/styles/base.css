@@ -109,6 +109,8 @@ html.theme-switching *::after { transition: none !important; }
 [data-theme="dark"] .theme-icon--moon,
 [data-theme="light"] .theme-icon--sun { opacity: 0; transform: rotate(-90deg) scale(0.4); }
 
+/* Component classes live in the components layer so Tailwind utilities can override them. */
+@layer components {
 /* ---------- Surfaces ---------- */
 .bg-grid {
   background-image:
@@ -312,6 +314,8 @@ input[type="color"] {
 .hljs-title, .hljs-section, .hljs-attr, .hljs-attribute, .hljs-name, .hljs-property { color: oklch(0.78 0.11 230); }
 [data-theme="light"] .hljs-title, [data-theme="light"] .hljs-section, [data-theme="light"] .hljs-attr, [data-theme="light"] .hljs-attribute, [data-theme="light"] .hljs-name, [data-theme="light"] .hljs-property { color: oklch(0.48 0.14 240); }
 .hljs-deletion { color: var(--danger); }
+
+}
 
 /* ---------- Motion ---------- */
 @keyframes spin { to { transform: rotate(360deg); } }

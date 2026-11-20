@@ -11,12 +11,117 @@ function locate(text: string, position: number) {
   return { line, column };
 }
 
-/** Parses JSON and turns engine errors into a friendly message with a line and column. */
+/**
+ * A strict JSON scanner used only after JSON.parse fails, to find exactly where and why.
+ * Browsers word (and sometimes omit) positions differently, so we don't rely on their messages.
+ */
+function findJsonError(text: string): { position: number; message: string } | null {
+  let i = 0;
+  const fail = (message: string, at = i): never => {
+    throw { position: at, message };
+  };
+  const ws = () => {
+    while (i < text.length && " \t\n\r".includes(text[i]!)) i++;
+  };
+  const describe = (c: string | undefined) => (c === undefined ? "the end of the input" : `'${c}'`);
+  const value = (): void => {
+    ws();
+    const c = text[i];
+    if (c === "{") return object();
+    if (c === "[") return array();
+    if (c === '"') return string();
+    if (c === "-" || (c !== undefined && c >= "0" && c <= "9")) return number();
+    for (const lit of ["true", "false", "null"]) if (text.startsWith(lit, i)) return void (i += lit.length);
+    if (c === "'") fail("Strings must use double quotes, not single quotes");
+    if (c === "}" || c === "]") fail(`Unexpected ${describe(c)}: a value is missing`);
+    fail(`Unexpected ${describe(c)}: expected a value`);
+  };
+  const string = () => {
+    i++;
+    while (i < text.length) {
+      const c = text[i]!;
+      if (c === '"') return void i++;
+      if (c === "\\") {
+        const n = text[i + 1];
+        if (n === "u") {
+          if (!/^[0-9a-fA-F]{4}$/.test(text.slice(i + 2, i + 6))) fail("Invalid \\u escape: it needs four hex digits");
+          i += 6;
+          continue;
+        }
+        if (n === undefined || !'"\\/bfnrt'.includes(n)) fail(`Invalid escape sequence \\${n ?? ""}`);
+        i += 2;
+        continue;
+      }
+      if (c === "\n") fail("Strings can't contain a line break: use \\n instead");
+      i++;
+    }
+    fail("This string is never closed: a closing \" is missing");
+  };
+  const number = () => {
+    const m = text.slice(i).match(/^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/);
+    if (!m || !m[0] || m[0] === "-") fail("Invalid number");
+    i += m![0].length;
+  };
+  const object = () => {
+    i++;
+    ws();
+    if (text[i] === "}") return void i++;
+    for (;;) {
+      ws();
+      if (text[i] === "}") fail("Trailing comma: remove the comma before '}'", i);
+      if (text[i] !== '"') fail(text[i] === "'" ? "Keys must use double quotes, not single quotes" : `Expected a key in double quotes but found ${describe(text[i])}`);
+      string();
+      ws();
+      if (text[i] !== ":") fail(`Expected ':' after the key but found ${describe(text[i])}`);
+      i++;
+      value();
+      ws();
+      if (text[i] === ",") {
+        i++;
+        continue;
+      }
+      if (text[i] === "}") return void i++;
+      fail(text[i] === undefined ? "This object is never closed: a '}' is missing" : `Expected ',' or '}' but found ${describe(text[i])}. Is a comma missing?`);
+    }
+  };
+  const array = () => {
+    i++;
+    ws();
+    if (text[i] === "]") return void i++;
+    for (;;) {
+      ws();
+      if (text[i] === "]") fail("Trailing comma: remove the comma before ']'", i);
+      value();
+      ws();
+      if (text[i] === ",") {
+        i++;
+        continue;
+      }
+      if (text[i] === "]") return void i++;
+      fail(text[i] === undefined ? "This array is never closed: a ']' is missing" : `Expected ',' or ']' but found ${describe(text[i])}. Is a comma missing?`);
+    }
+  };
+  try {
+    value();
+    ws();
+    if (i < text.length) fail(`Unexpected ${describe(text[i])} after the end of the JSON`);
+    return null;
+  } catch (e) {
+    return e as { position: number; message: string };
+  }
+}
+
+/** Parses JSON and turns errors into a friendly message with a line and column. */
 export function parseJson(text: string): { value?: unknown; error?: JsonError } {
   if (!text.trim()) return { error: { message: "Paste some JSON to begin.", line: 0, column: 0, position: -1 } };
   try {
     return { value: JSON.parse(text) };
   } catch (e) {
+    const found = findJsonError(text);
+    if (found) {
+      const { line, column } = locate(text, found.position);
+      return { error: { message: found.message, line, column, position: found.position } };
+    }
     const raw = (e as Error).message;
     let position = -1;
     const pos = raw.match(/position (\d+)/);

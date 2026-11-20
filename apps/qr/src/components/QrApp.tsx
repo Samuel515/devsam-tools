@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Icon, icons, Segmented, useCopy } from "@devsam/ui/react/ui";
 import { downloadBlob } from "@devsam/ui/lib/files";
 import { contrast, isInverted, payload, renderSvg, svgToPng, type DotStyle, type Ecc, type EyeStyle, type Fields, type Kind, type Style } from "../lib/qr";
@@ -57,10 +57,9 @@ export default function QrApp({ defaultKind = "url" }: { defaultKind?: Kind }) {
     }
   }, [shown, style]);
 
-  const svgUrl = useMemo(() => (result.svg ? URL.createObjectURL(new Blob([result.svg], { type: "image/svg+xml" })) : ""), [result.svg]);
-  useEffect(() => () => {
-    if (svgUrl) URL.revokeObjectURL(svgUrl);
-  }, [svgUrl]);
+  // A data URL renders the same on the server and in the browser (blob URLs made while
+  // prerendering don't exist in the visitor's browser).
+  const svgUrl = useMemo(() => (result.svg ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(result.svg)}` : ""), [result.svg]);
 
   const lowContrast = !style.transparent && contrast(style.fg, style.bg) < 3;
   const inverted = !style.transparent && isInverted(style.fg, style.bg);
