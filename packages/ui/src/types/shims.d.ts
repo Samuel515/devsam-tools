@@ -26,3 +26,9 @@ declare module "utif" {
   export function decodeImage(buffer: ArrayBuffer, ifd: IFD): void;
   export function toRGBA8(ifd: IFD): Uint8Array;
 }
+
+declare module "upng-js" {
+  export function encode(frames: ArrayBuffer[], width: number, height: number, colors: number, delays?: number[]): ArrayBuffer;
+  export function decode(buffer: ArrayBuffer): { width: number; height: number };
+  export function toRGBA8(img: unknown): ArrayBuffer[];
+}

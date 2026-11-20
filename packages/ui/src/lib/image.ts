@@ -183,7 +183,7 @@ let worker: Worker | null = null;
 let jobId = 0;
 const pending = new Map<number, { resolve: (b: ArrayBuffer) => void; reject: (e: Error) => void }>();
 
-function wasmEncode(kind: "avif" | "webp", data: ImageData, quality: number): Promise<ArrayBuffer> {
+function wasmEncode(kind: "avif" | "webp" | "jpeg" | "png", data: ImageData, quality: number): Promise<ArrayBuffer> {
   if (!worker) {
     worker = new Worker(new URL("./codec.worker.ts", import.meta.url), { type: "module" });
     worker.onmessage = (e: MessageEvent<{ id: number; buf?: ArrayBuffer; error?: string }>) => {
@@ -322,6 +322,18 @@ export async function encodeImage(src: HTMLCanvasElement, format: OutFormat, opt
     case "ico":
       return encodeIco(src, opts.icoSizes ?? [16, 32, 48, 256]);
   }
+}
+
+/** JPEG with mozjpeg (in a worker). Transparent areas are filled with `background`. */
+export async function encodeMozJpeg(src: HTMLCanvasElement, quality: number, background = "#ffffff"): Promise<Blob> {
+  const buf = await wasmEncode("jpeg", imageData(flatten(src, background)), Math.round(Math.min(1, Math.max(0.05, quality)) * 100));
+  return new Blob([buf], { type: "image/jpeg" });
+}
+
+/** PNG via UPNG. colors = 0 is lossless; 2–256 reduces the palette, like TinyPNG. */
+export async function encodePngQuant(src: HTMLCanvasElement, colors: number): Promise<Blob> {
+  const buf = await wasmEncode("png", imageData(src), colors);
+  return new Blob([buf], { type: "image/png" });
 }
 
 /** Scales a canvas down (never up) to fit within maxW x maxH, with high-quality smoothing. */

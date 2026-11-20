@@ -42,9 +42,9 @@
   --fg: oklch(0.18 0.012 var(--hue));
   --fg-muted: oklch(0.42 0.014 var(--hue));
   --fg-subtle: oklch(0.55 0.014 var(--hue));
-  --accent: oklch(0.55 0.17 var(--hue));
+  --accent: oklch(0.5 0.16 var(--hue));
   --accent-fg: oklch(0.99 0.01 var(--hue));
-  --accent-soft: oklch(0.55 0.17 var(--hue) / 0.1);
+  --accent-soft: oklch(0.5 0.16 var(--hue) / 0.1);
   --danger: oklch(0.55 0.2 25);
   --success: oklch(0.55 0.14 160);
   --grid: oklch(0.2 0.01 var(--hue) / 0.045);
