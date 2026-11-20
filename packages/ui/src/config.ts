@@ -12,20 +12,26 @@ export const site = {
 /**
  * Google AdSense.
  *
- * Leave `client` empty and no ad code loads and every ad slot stays hidden.
- * When AdSense approves a site:
- *   1. Set `client` to your publisher ID, e.g. "ca-pub-1234567890123456".
- *   2. Create one display ad unit per slot name below in AdSense and paste its ID.
- *   3. Rebuild. ads.txt is generated automatically from `client`.
+ * `publisherId` only feeds each tool's ads.txt, which declares the account that may
+ * sell ads here. It shows nothing on the page.
+ *
+ * Ads stay completely off while `enabled` is false: no ad script loads and every
+ * ad slot stays hidden. When AdSense approves the site:
+ *   1. Create two responsive display ad units in AdSense and paste their IDs below.
+ *   2. Set `enabled` to true and push. Every tool rebuilds with ads on.
  */
 export const adsense = {
-  client: "",
+  publisherId: "pub-7349479508743936",
+  enabled: false,
   slots: {
     // Shown under the tool, above the explainer content.
     belowTool: "",
     // Shown inside the explainer content.
     inContent: "",
   },
+  get client() {
+    return `ca-${this.publisherId}`;
+  },
 };
 
-export const adsEnabled = () => adsense.client.trim().length > 0;
+export const adsEnabled = () => adsense.enabled && adsense.publisherId.trim().length > 0;

@@ -64,7 +64,7 @@ npm run build                     # build every tool
 
 ## Ads
 
-Ad slots are built in but stay hidden until AdSense is configured. Set the publisher ID and slot IDs in `packages/ui/src/config.ts`. The ad script, ad slots, `ads.txt` and the privacy policy's advertising section all switch on together.
+AdSense settings live in `packages/ui/src/config.ts`. `publisherId` is already set, so every tool serves an `ads.txt` declaring the account. Ads stay off while `enabled` is `false`. After AdSense approval, add the two ad unit IDs, set `enabled: true` and push: the ad script, ad slots and the privacy policy's advertising section switch on together. The portfolio never shows ads; it only carries the verification meta tag and `ads.txt`.
 
 ## Deploying
 
