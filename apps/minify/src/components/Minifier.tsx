@@ -5,9 +5,9 @@ import type { CssOptions, HtmlOptions, JsOptions, Job, Lang, Result } from "../l
 
 export const LANGS: { value: Lang; label: string; href: string; ext: string; mime: string; accept: string }[] = [
   { value: "js", label: "JavaScript", href: "/", ext: "js", mime: "text/javascript", accept: ".js,.mjs,.cjs,.jsx,text/javascript" },
-  { value: "css", label: "CSS", href: "/css-minifier", ext: "css", mime: "text/css", accept: ".css,text/css" },
-  { value: "html", label: "HTML", href: "/html-minifier", ext: "html", mime: "text/html", accept: ".html,.htm,text/html" },
-  { value: "json", label: "JSON", href: "/json-minifier", ext: "json", mime: "application/json", accept: ".json,application/json" },
+  { value: "css", label: "CSS", href: "/css-minifier/", ext: "css", mime: "text/css", accept: ".css,text/css" },
+  { value: "html", label: "HTML", href: "/html-minifier/", ext: "html", mime: "text/html", accept: ".html,.htm,text/html" },
+  { value: "json", label: "JSON", href: "/json-minifier/", ext: "json", mime: "application/json", accept: ".json,application/json" },
 ];
 
 const SAMPLES: Record<Lang, string> = {

@@ -1,5 +1,5 @@
 // Output size presets. Social sizes follow each platform's current upload recommendations.
-export type Preset = { id: string; group: string; label: string; w: number; h: number; note?: string };
+export type Preset = { id: string; group: string; label: string; w: number; h: number; note?: string; /** Keep the file under this size (KB, 1000 bytes). */ maxKB?: number };
 
 export const PRESETS: Preset[] = [
   { id: "ig-post", group: "Instagram", label: "Post (square)", w: 1080, h: 1080 },
@@ -17,6 +17,7 @@ export const PRESETS: Preset[] = [
   { id: "li-photo", group: "LinkedIn", label: "Profile photo", w: 400, h: 400 },
   { id: "passport-us", group: "Passport & ID", label: "2×2 in (US)", w: 600, h: 600, note: "300 DPI" },
   { id: "passport-35x45", group: "Passport & ID", label: "35×45 mm (UK, EU, Nigeria)", w: 413, h: 531, note: "300 DPI" },
+  { id: "waec-gce", group: "Passport & ID", label: "WAEC GCE photo", w: 275, h: 314, maxKB: 50, note: "JPG under 50 KB. Check the current WAEC instructions before uploading." },
   { id: "hd", group: "Screens", label: "Full HD", w: 1920, h: 1080 },
   { id: "4k", group: "Screens", label: "4K", w: 3840, h: 2160 },
 ];

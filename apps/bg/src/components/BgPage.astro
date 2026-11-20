@@ -3,6 +3,8 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
 import BgRemover from "./BgRemover";
 
 export const variants = [
@@ -14,6 +16,23 @@ export const variants = [
     h1: "Make a photo background white",
     intro: "Perfect for product listings, passport-style photos and profile pictures. The AI finds the subject and puts it on pure white.",
     bg: "#ffffff",
+    topic: {
+      "heading": "When you need a white background",
+      "paragraphs": [
+        "Online marketplaces, ID applications and professional profiles often require a plain white background. Product photos on white look cleaner, and many document photos are rejected if the background is busy or coloured.",
+        "This page replaces the background with pure white automatically. For passport and ID photos, crop the result to the right size afterwards with the <a href=\"https://resize.devsamc.xyz/passport-photo/\">Image Resizer</a>."
+      ],
+      "list": [
+        {
+          "title": "Product photos:",
+          "body": "shoot on any surface, then put the item on white for listings."
+        },
+        {
+          "title": "ID and profile photos:",
+          "body": "replace a messy room or outdoor scene with a clean white backdrop."
+        }
+      ]
+    },
   },
   {
     slug: "transparent-background",
@@ -23,6 +42,23 @@ export const variants = [
     h1: "Make an image background transparent",
     intro: "Get a clean transparent PNG of any person, product or object, ready for designs, slides and stickers.",
     bg: undefined,
+    topic: {
+      "heading": "What a transparent background is for",
+      "paragraphs": [
+        "A transparent PNG has no background at all, so the subject sits directly on whatever is behind it: a slide, a poster, a website or a sticker.",
+        "Download as PNG to keep the transparency. JPG doesn't support transparency, so a JPG download is placed on white instead."
+      ],
+      "list": [
+        {
+          "title": "Designs and slides:",
+          "body": "drop people or products onto any background."
+        },
+        {
+          "title": "Stickers and logos:",
+          "body": "cut out a shape and use it anywhere."
+        }
+      ]
+    },
   },
 ] as const;
 
@@ -38,6 +74,7 @@ const { variant: v } = Astro.props;
   description={v?.description ??
     "Remove image backgrounds automatically with AI. Get a transparent PNG or a new colour background in seconds. Free, unlimited, and your photos never leave your device."}
 >
+  {v && <Breadcrumbs slug="bg" current={v.label} />}
   <ToolHero
     title={v?.h1 ?? "Remove the background from any photo"}
     intro={v?.intro ?? "AI cuts out people, products and objects in seconds. Download a transparent PNG, or put the subject on a new colour."}
@@ -59,7 +96,7 @@ const { variant: v } = Astro.props;
       {
         variants.map((x) => (
           <li>
-            <a href={`/${x.slug}`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
               {x.label}
             </a>
           </li>
@@ -67,6 +104,24 @@ const { variant: v } = Astro.props;
       }
     </ul>
   </section>
+
+  <TopicSection topic={v?.topic ?? {
+      "heading": "How AI background removal works",
+      "paragraphs": [
+        "The tool uses a segmentation model, an AI trained on many thousands of images to tell the main subject apart from its background. It produces a mask that marks every pixel as subject, background or somewhere in between, which is how hair and soft edges stay natural.",
+        "Everything runs inside your browser, so your photos are never uploaded. The model downloads once and is then cached, so later photos are much faster."
+      ],
+      "list": [
+        {
+          "title": "Best results:",
+          "body": "one clear subject, reasonable light and some contrast with the background."
+        },
+        {
+          "title": "Harder cases:",
+          "body": "glass, smoke, very fine hair against a similar colour, or busy scenes with no obvious subject."
+        }
+      ]
+    }} />
 
   <Explainer
     slug="bg"

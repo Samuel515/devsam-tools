@@ -21,7 +21,7 @@
   --line-strong: oklch(1 0 0 / 0.16);
   --fg: oklch(0.96 0.004 var(--hue));
   --fg-muted: oklch(0.73 0.012 var(--hue));
-  --fg-subtle: oklch(0.57 0.012 var(--hue));
+  --fg-subtle: oklch(0.62 0.012 var(--hue));
   --accent: oklch(0.8 0.15 var(--hue));
   --accent-fg: oklch(0.2 0.05 var(--hue));
   --accent-soft: oklch(0.8 0.15 var(--hue) / 0.13);
@@ -41,7 +41,7 @@
   --line-strong: oklch(0.2 0.01 var(--hue) / 0.2);
   --fg: oklch(0.18 0.012 var(--hue));
   --fg-muted: oklch(0.42 0.014 var(--hue));
-  --fg-subtle: oklch(0.55 0.014 var(--hue));
+  --fg-subtle: oklch(0.5 0.014 var(--hue));
   --accent: oklch(0.5 0.16 var(--hue));
   --accent-fg: oklch(0.99 0.01 var(--hue));
   --accent-soft: oklch(0.5 0.16 var(--hue) / 0.1);
@@ -92,6 +92,10 @@ html {
 
 ::selection { background: var(--accent); color: var(--accent-fg); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+/* Form fields show focus with their own border colour, not an extra ring around them. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible { outline: none; }
 
 /* Pause colour transitions while the theme switches so the reveal circle stays crisp. */
 html.theme-switching *:not(.theme-icon),
@@ -194,7 +198,6 @@ html.theme-switching *::after { transition: none !important; }
 .input:focus, .select:focus, .textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .select {
   appearance: none;
@@ -234,6 +237,7 @@ input[type="color"] {
 }
 .seg > button:hover { color: var(--fg); }
 .seg > button[aria-pressed="true"],
+.seg > button[aria-checked="true"],
 .seg > button[aria-selected="true"] { background: var(--bg-elev); color: var(--fg); box-shadow: 0 1px 2px oklch(0 0 0 / 0.2); }
 
 /* Drop zone */
@@ -253,6 +257,7 @@ input[type="color"] {
 }
 .dropzone:hover,
 .dropzone[data-active="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone:has(input:focus-visible) { border-color: var(--accent); background: var(--accent-soft); }
 
 .kbd {
   font-family: var(--font-mono);
@@ -334,4 +339,25 @@ input[type="color"] {
 
 @media print {
   .no-print { display: none !important; }
+}
+
+/* ---------- Confirm dialog (react/ConfirmDialog.tsx) ---------- */
+.confirm-dialog::backdrop {
+  background: oklch(0 0 0 / 0.55);
+  backdrop-filter: blur(4px);
+}
+.confirm-dialog[open] {
+  animation: dialog-in 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.confirm-dialog[open]::backdrop {
+  animation: backdrop-in 0.18s ease-out;
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confirm-dialog[open], .confirm-dialog[open]::backdrop { animation: none; }
 }

@@ -3,6 +3,8 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection, { type Topic } from "@devsam/ui/components/TopicSection.astro";
 import Minifier from "./Minifier";
 import type { Lang } from "../lib/minify.worker";
 
@@ -14,11 +16,29 @@ export const pages: {
   description: string;
   intro: string;
   engine: string;
+  topic: Topic;
   faqs: { q: string; a: string }[];
 }[] = [
   {
     slug: "",
     lang: "js",
+    topic: {
+      "heading": "What JavaScript minification does",
+      "paragraphs": [
+        "Minification makes JavaScript smaller without changing what it does. It removes whitespace and comments, shortens local variable names, and rewrites code into shorter equivalents, such as turning if/else into ternaries.",
+        "Smaller scripts download and parse faster, which improves page speed and Core Web Vitals. Combined with gzip or Brotli on your server, a minified file is often a fraction of the original's transfer size."
+      ],
+      "list": [
+        {
+          "title": "Keep source maps for production debugging:",
+          "body": "minify from your build tool when you can; use this tool for quick one-off files and snippets."
+        },
+        {
+          "title": "Need it hard to read too?",
+          "body": "use the <a href=\"https://obfuscate.devsamc.xyz\">JavaScript Obfuscator</a>."
+        }
+      ]
+    },
     name: "JavaScript",
     title: "JavaScript Minifier — Minify JS Online with Terser, Free | devsam",
     description: "Minify JavaScript online with Terser. Shorten names, remove console calls and see the gzipped size. Free, private, runs in your browser.",
@@ -34,6 +54,13 @@ export const pages: {
   {
     slug: "css-minifier",
     lang: "css",
+    topic: {
+      "heading": "What CSS minification does",
+      "paragraphs": [
+        "CSS minification removes spaces, comments and redundant characters, shortens colours like #ffffff to #fff, and drops units from zero values. CSSO can also merge rules that share selectors or declarations.",
+        "Because CSS blocks the page from rendering until it loads, smaller stylesheets make pages appear faster."
+      ]
+    },
     name: "CSS",
     title: "CSS Minifier — Minify and Optimise CSS Online Free | devsam",
     description: "Minify CSS online with CSSO. Merges duplicate rules, shortens colours and values, and shows the gzipped size. Free and private.",
@@ -47,6 +74,13 @@ export const pages: {
   {
     slug: "html-minifier",
     lang: "html",
+    topic: {
+      "heading": "What HTML minification does",
+      "paragraphs": [
+        "HTML minification collapses whitespace between tags, removes comments and optional quotes, and shortens boolean attributes like disabled=\"disabled\" to disabled. It can also minify the CSS and JavaScript inside style and script tags.",
+        "It's most useful for static sites, email templates and pages that are served without a build step."
+      ]
+    },
     name: "HTML",
     title: "HTML Minifier — Minify HTML, Inline CSS and JS Online | devsam",
     description: "Minify HTML online, including inline styles and scripts. Removes comments and whitespace safely. Free, private, no uploads.",
@@ -60,6 +94,13 @@ export const pages: {
   {
     slug: "json-minifier",
     lang: "json",
+    topic: {
+      "heading": "When to minify JSON",
+      "paragraphs": [
+        "Minified JSON has no spaces or line breaks, so it's as small as possible to send over a network, store in a database or embed in code. The data itself is unchanged.",
+        "Minifying also validates the JSON: if there's a syntax error, you'll see it before shipping. To make minified JSON readable again, use the <a href=\"https://dev.devsamc.xyz\">JSON formatter</a>."
+      ]
+    },
     name: "JSON",
     title: "JSON Minifier — Compress JSON Online Free | devsam",
     description: "Minify JSON by removing all whitespace, and check it's valid at the same time. Free, private and runs in your browser.",
@@ -79,6 +120,7 @@ const { page: p } = Astro.props;
 ---
 
 <ToolLayout slug="minify" title={p.title} description={p.description}>
+  {p.slug && <Breadcrumbs slug="minify" current={`${p.name} minifier`} />}
   <ToolHero title={`Minify ${p.name}`} intro={p.intro} chips={["Runs in your browser", "Code never uploaded", "Free"]} />
 
   <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
@@ -88,6 +130,8 @@ const { page: p } = Astro.props;
   </section>
 
   <AdSlot name="belowTool" class="mt-10" />
+
+  <TopicSection topic={p.topic} />
 
   <Explainer
     slug="minify"

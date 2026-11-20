@@ -1,0 +1,12 @@
+---
+import MdPage from "../components/MdPage.astro";
+import { variants } from "../data/variants";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<MdPage variant={variant} />

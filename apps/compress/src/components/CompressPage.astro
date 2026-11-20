@@ -3,55 +3,44 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
 import Compressor from "./Compressor";
-
-export const variants = [
-  {
-    slug: "compress-jpg",
-    h1: "Compress JPG images",
-    title: "Compress JPG Online — Reduce JPEG File Size Free | devsam",
-    description: "Reduce JPG and JPEG file sizes by up to 80% with no visible quality loss. Batch compress in your browser: free, private, no uploads.",
-    intro: "Shrink JPG photos with mozjpeg, the encoder big sites use, so they look the same but load faster and fit email limits.",
-    maxSide: 0,
-  },
-  {
-    slug: "compress-png",
-    h1: "Compress PNG images",
-    title: "Compress PNG Online — Reduce PNG File Size Free | devsam",
-    description: "Make PNG files up to 70% smaller by reducing colours smartly while keeping transparency. Free, private and runs in your browser.",
-    intro: "Shrink PNG screenshots, logos and graphics by reducing their colour palette smartly. Transparency is kept.",
-    maxSide: 0,
-  },
-  {
-    slug: "resize-image",
-    h1: "Resize images",
-    title: "Resize Images Online — Change Image Size in Bulk Free | devsam",
-    description: "Resize JPG, PNG, WebP and HEIC images to 1920, 1280 or any common size in bulk. Sharp results, free, and nothing is uploaded.",
-    intro: "Resize photos to a maximum width or height in one go, then compress them, all in your browser. The aspect ratio is always kept.",
-    maxSide: 1920,
-  },
-] as const;
+import { generalTopic, pages, type CompressPageData } from "../data/pages";
 
 interface Props {
-  variant?: (typeof variants)[number];
+  page?: CompressPageData;
 }
-const { variant: v } = Astro.props;
+const { page: v } = Astro.props;
+
+const sharedFaqs = [
+  { q: "Are my images uploaded?", a: "No. Compression runs in your browser using WebAssembly versions of mozjpeg, libwebp and libavif. Your images never leave your device." },
+  { q: "Is EXIF and location data removed?", a: "Yes. Compressed images contain only the picture, so camera details and GPS location are removed. Photos are rotated correctly before the data is removed." },
+];
+const homeFaqs = [
+  { q: "Will compression reduce the quality of my photos?", a: "Balanced compression removes detail your eyes can't see, so most photos look identical. Use Compare to check, and choose Best quality if you need it closer to the original." },
+  { q: "How much smaller will my images get?", a: "Typical phone photos shrink by 60–80%, and PNG screenshots by 50–70%. Images that are already optimised may not shrink much; in that case the original is kept." },
+  { q: "How do I compress an image to a specific size, like 50 KB?", a: "Choose Max file size, for example Under 50 KB. Each image is compressed to the highest quality that fits, and resized only if it must be." },
+  { q: "Which format gives the smallest files?", a: "AVIF is usually smallest, then WebP, then JPG. JPG is the safest choice if the images will be used in older apps or emailed." },
+  { q: "Can I compress images for email or WhatsApp?", a: "Yes. Choose Resize, Max 1920px or Max 1280px, with Balanced compression. Most photos then come out well under 500 KB." },
+];
 ---
 
 <ToolLayout
   slug="compress"
   title={v?.title ?? "Image Compressor — Compress JPG, PNG, WebP Online Free | devsam"}
   description={v?.description ??
-    "Compress JPG, PNG, WebP and AVIF images by up to 80% without visible quality loss. Resize and convert in bulk. Free, private, nothing is uploaded."}
+    "Compress JPG, PNG, WebP and AVIF images by up to 80% without visible quality loss, or to an exact size like 50 KB. Free, private, nothing is uploaded."}
 >
+  {v && <Breadcrumbs slug="compress" current={v.label} />}
   <ToolHero
     title={v?.h1 ?? "Compress images without losing quality"}
-    intro={v?.intro ?? "Drop your photos and they shrink instantly, with the same look and a fraction of the size. Resize or convert them in the same step."}
+    intro={v?.intro ?? "Drop your photos and they shrink instantly, with the same look and a fraction of the size. Resize, convert or fit them under a size limit in the same step."}
   />
 
   <section id="tool" class="mx-auto max-w-5xl px-4 sm:px-6">
     <div class="card p-3 sm:p-5">
-      <Compressor client:load defaultMaxSide={v?.maxSide ?? 0} />
+      <Compressor client:load defaultMaxSide={v?.maxSide ?? 0} defaultTargetKB={v?.targetKB ?? 0} />
     </div>
   </section>
 
@@ -62,10 +51,10 @@ const { variant: v } = Astro.props;
     <ul class="mt-4 flex flex-wrap gap-2">
       <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>Compress images</a></li>
       {
-        variants.map((x) => (
+        pages.map((x) => (
           <li>
-            <a href={`/${x.slug}`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
-              {x.h1}
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
             </a>
           </li>
         ))
@@ -73,29 +62,30 @@ const { variant: v } = Astro.props;
     </ul>
   </section>
 
+  <TopicSection topic={v?.topic ?? generalTopic} />
+
   <Explainer
     slug="compress"
-    howToTitle="How to compress an image"
-    steps={[
-      { title: "Drop your images", body: "Add one image or hundreds. JPG, PNG, WebP, AVIF and iPhone HEIC photos all work." },
-      { title: "They compress instantly", body: "Balanced is a great default. Choose Smallest or Best quality, or resize and change the format if you need to." },
-      { title: "Check and download", body: "Use Compare to see before and after side by side, then download each file or all of them as a ZIP." },
-    ]}
+    howToTitle={v ? v.h1.replace(/^Compress/, "How to compress").replace(/^Resize/, "How to resize") : "How to compress an image"}
+    steps={v?.targetKB
+      ? [
+          { title: "Drop your image", body: "Add a photo or several. JPG, PNG, WebP and iPhone HEIC photos all work." },
+          { title: "It's fitted automatically", body: "The highest quality that fits under the limit is found for you. Pick a different limit under Max file size if you need to." },
+          { title: "Download", body: "Each file shows its new size and a tick when it fits. Download one, or all of them as a ZIP." },
+        ]
+      : [
+          { title: "Drop your images", body: "Add one image or hundreds. JPG, PNG, WebP, AVIF and iPhone HEIC photos all work." },
+          { title: "They compress instantly", body: "Balanced is a great default. Choose Smallest or Best quality, set a size limit, or resize and change the format." },
+          { title: "Check and download", body: "Use Compare to see before and after side by side, then download each file or all of them as a ZIP." },
+        ]}
     features={[
       { title: "Up to 80% smaller", body: "Photos often shrink by 60–80% with no difference you can see, thanks to mozjpeg, WebP and AVIF encoders." },
+      { title: "Exact size limits", body: "Fit images under 20 KB, 50 KB, 100 KB or any common limit, with the best quality that fits." },
       { title: "Smart PNG compression", body: "PNGs are reduced to an optimised colour palette, like TinyPNG, while keeping transparency." },
-      { title: "Resize in bulk", body: "Cap images at 4K, Full HD or smaller in the same step. The aspect ratio is always kept." },
       { title: "Before and after", body: "Drag a slider across the full image to compare the original with the compressed version." },
       { title: "Never bigger", body: "If an image is already well optimised, you get the original back instead of a larger file." },
       { title: "Private by design", body: "Everything happens on your device. Images are never uploaded, and location data and other metadata are removed." },
     ]}
-    faqs={[
-      { q: "Will compression reduce the quality of my photos?", a: "Balanced compression removes detail your eyes can't see, so most photos look identical. Use Compare to check, and choose Best quality if you need it closer to the original." },
-      { q: "How much smaller will my images get?", a: "Typical phone photos shrink by 60–80%, and PNG screenshots by 50–70%. Images that are already optimised may not shrink much; in that case the original is kept." },
-      { q: "Are my images uploaded?", a: "No. Compression runs in your browser using WebAssembly versions of mozjpeg, libwebp and libavif. Your images never leave your device." },
-      { q: "Is EXIF and location data removed?", a: "Yes. Compressed images contain only the picture, so camera details and GPS location are removed. Photos are rotated correctly before the data is removed." },
-      { q: "Which format gives the smallest files?", a: "AVIF is usually smallest, then WebP, then JPG. JPG is the safest choice if the images will be used in older apps or emailed." },
-      { q: "Can I compress images for email or WhatsApp?", a: "Yes. Choose Resize, Max 1920px or Max 1280px, with Balanced compression. Most photos then come out well under 500 KB." },
-    ]}
+    faqs={v ? [...v.faqs, ...sharedFaqs] : [...homeFaqs, ...sharedFaqs]}
   />
 </ToolLayout>

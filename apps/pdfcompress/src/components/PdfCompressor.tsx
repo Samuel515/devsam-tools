@@ -3,11 +3,14 @@ import { Dropzone } from "@devsam/ui/react/Dropzone";
 import { Icon, icons, Spinner } from "@devsam/ui/react/ui";
 import { baseName, downloadBlob, formatBytes } from "@devsam/ui/lib/files";
 import { PdfPasswordError } from "@devsam/ui/lib/pdf";
-import { compressPdf, LEVELS, type Level } from "../lib/compress";
+import { compressPdf, compressToSize, LEVELS, type Level } from "../lib/compress";
 
-type Result = { level: Level; gray: boolean; blob: Blob };
+type Result = { key: string; blob: Blob; fits?: boolean };
+const TARGETS = [0, 100, 200, 500, 1000, 2000];
+const label = (kb: number) => (kb >= 1000 ? `${kb / 1000} MB` : `${kb} KB`);
 
-export default function PdfCompressor() {
+export default function PdfCompressor({ defaultTargetKB = 0 }: { defaultTargetKB?: number }) {
+  const [targetKB, setTargetKB] = useState(defaultTargetKB);
   const [file, setFile] = useState<File | null>(null);
   const [buf, setBuf] = useState<ArrayBuffer | null>(null);
   const [level, setLevel] = useState<Level>("strong");
@@ -17,6 +20,8 @@ export default function PdfCompressor() {
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [needPassword, setNeedPassword] = useState(false);
+
+  const key = `${targetKB}|${level}|${gray}`;
 
   const reset = () => {
     setFile(null);
@@ -36,13 +41,25 @@ export default function PdfCompressor() {
   };
 
   const run = async () => {
-    if (!buf) return;
+    if (!buf || !file) return;
+    if (targetKB > 0 && file.size <= targetKB * 1000) {
+      setResult({ key, blob: file, fits: true });
+      setError("");
+      return;
+    }
     setError("");
     setResult(null);
     setProgress({ done: 0, total: 1 });
     try {
-      const bytes = await compressPdf(buf, level, { grayscale: gray, password: password || undefined }, (done, total) => setProgress({ done, total }));
-      setResult({ level, gray, blob: new Blob([bytes as BlobPart], { type: "application/pdf" }) });
+      const pw = password || undefined;
+      if (targetKB > 0) {
+        // 1000 bytes per KB: the stricter reading, which every upload form accepts.
+        const r = await compressToSize(buf, targetKB * 1000, { password: pw }, (done, total) => setProgress({ done, total }));
+        setResult({ key, blob: new Blob([r.bytes as BlobPart], { type: "application/pdf" }), fits: r.fits });
+      } else {
+        const bytes = await compressPdf(buf, level, { grayscale: gray, password: pw }, (done, total) => setProgress({ done, total }));
+        setResult({ key, blob: new Blob([bytes as BlobPart], { type: "application/pdf" }) });
+      }
       setNeedPassword(false);
     } catch (e) {
       if (e instanceof PdfPasswordError) {
@@ -58,7 +75,7 @@ export default function PdfCompressor() {
     return <Dropzone onFiles={onFiles} accept="application/pdf,.pdf" multiple={false} title="Drop a PDF to compress" hint="Make it small enough for email and upload limits" />;
   }
 
-  const fresh = result && result.level === level && result.gray === gray;
+  const fresh = result && result.key === key;
   const saved = fresh ? 1 - result!.blob.size / file.size : 0;
   const bigger = fresh && result!.blob.size >= file.size;
 
@@ -77,6 +94,23 @@ export default function PdfCompressor() {
         </button>
       </div>
 
+      <div className="mt-5 flex flex-wrap items-end gap-3">
+        <label className="w-48">
+          <span className="field-label">Target size</span>
+          <select className="select" value={targetKB} onChange={(e) => setTargetKB(Number(e.target.value))}>
+            {TARGETS.map((k) => (
+              <option key={k} value={k}>
+                {k ? `Under ${label(k)}` : "No target, pick a level"}
+              </option>
+            ))}
+          </select>
+        </label>
+        {targetKB > 0 && (
+          <p className="pb-2 text-sm text-muted">The gentlest compression that gets under {label(targetKB)} is chosen automatically.</p>
+        )}
+      </div>
+
+      {targetKB === 0 && (
       <fieldset className="mt-5">
         <legend className="field-label">Compression</legend>
         <div className="grid gap-2 sm:grid-cols-3">
@@ -95,18 +129,21 @@ export default function PdfCompressor() {
           ))}
         </div>
       </fieldset>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
-        <label className={`flex items-center gap-2 text-sm ${level === "basic" ? "text-subtle opacity-50" : "text-muted"}`}>
-          <input type="checkbox" checked={gray} disabled={level === "basic"} onChange={(e) => setGray(e.target.checked)} />
-          Black and white (even smaller)
-        </label>
+        {targetKB === 0 && (
+          <label className={`flex items-center gap-2 text-sm ${level === "basic" ? "text-subtle opacity-50" : "text-muted"}`}>
+            <input type="checkbox" checked={gray} disabled={level === "basic"} onChange={(e) => setGray(e.target.checked)} />
+            Black and white (even smaller)
+          </label>
+        )}
         {needPassword && (
           <input className="input w-56" type="password" placeholder="PDF password" value={password} onChange={(e) => setPassword(e.target.value)} aria-label="PDF password" autoFocus />
         )}
         <button type="button" className="btn btn-primary ml-auto" disabled={!!progress} onClick={() => void run()}>
           {progress ? <Spinner /> : <Icon d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />}
-          {progress ? `Compressing ${progress.done} / ${progress.total}` : "Compress PDF"}
+          {progress ? (targetKB ? `Trying setting ${progress.done} of ${progress.total}` : `Compressing ${progress.done} / ${progress.total}`) : targetKB ? `Fit under ${label(targetKB)}` : "Compress PDF"}
         </button>
       </div>
 
@@ -125,11 +162,21 @@ export default function PdfCompressor() {
 
       {fresh && (
         <div className="fade-up mt-6 rounded-xl border border-line bg-accent-soft p-5">
+          {targetKB > 0 && result!.fits === false && (
+            <p className="mb-4 text-sm text-danger">
+              Couldn't get this PDF under {label(targetKB)} without making it unreadable. The smallest version is below. Split it into parts with the{" "}
+              <a className="underline" href="https://pdf.devsamc.xyz/split-pdf/">PDF Toolkit</a> and compress each part.
+            </p>
+          )}
           {bigger ? (
             <p className="text-sm">
-              <span className="font-medium">This PDF is already well compressed.</span>{" "}
+              <span className="font-medium">{targetKB > 0 && result!.blob === file ? `This PDF is already under ${label(targetKB)}.` : "This PDF is already well compressed."}</span>{" "}
               <span className="text-muted">
-                That setting made it {formatBytes(result!.blob.size)}. Try {level === "basic" ? "Recommended" : level === "strong" ? "Smallest" : "Black and white"} for a smaller file.
+                {targetKB > 0
+                  ? result!.blob === file
+                    ? `It's ${formatBytes(file.size)}, so you can upload it as it is.`
+                    : `Compressing made it ${formatBytes(result!.blob.size)}, so keep your original.`
+                  : `That setting made it ${formatBytes(result!.blob.size)}. Try ${level === "basic" ? "Recommended" : level === "strong" ? "Smallest" : "Black and white"} for a smaller file.`}
               </span>
             </p>
           ) : (

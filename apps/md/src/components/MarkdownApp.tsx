@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dropzone } from "@devsam/ui/react/Dropzone";
+import { ConfirmDialog } from "@devsam/ui/react/ConfirmDialog";
 import { Icon, icons, Segmented, Spinner, useCopy } from "@devsam/ui/react/ui";
 import { baseName, downloadBlob } from "@devsam/ui/lib/files";
 import { loadHighlighter, render, stats, toRawUrl, toStandaloneHtml } from "../lib/render";
@@ -25,6 +26,7 @@ export default function MarkdownApp() {
   const [loadingUrl, setLoadingUrl] = useState(false);
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmNew, setConfirmNew] = useState(false);
   const [activeId, setActiveId] = useState("");
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,10 @@ export default function MarkdownApp() {
       if (s >= 14 && s <= 22) setSize(s);
     } catch {}
     setReady(true);
-    loadHighlighter().then(() => setHlReady(true));
+    // highlight.js is large: wait until the page is idle so it doesn't delay start-up.
+    const idle = (cb: () => void) =>
+      typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 1500);
+    idle(() => void loadHighlighter().then(() => setHlReady(true)));
 
     // Shareable links: md.devsamc.xyz/?url=https://github.com/...
     const remote = new URLSearchParams(location.search).get("url");
@@ -213,6 +218,13 @@ export default function MarkdownApp() {
 
   const isEmpty = !doc.text.trim();
 
+  function startNew() {
+    setConfirmNew(false);
+    setDoc({ name: "untitled.md", text: "" });
+    setView("edit");
+    requestAnimationFrame(() => editorRef.current?.focus());
+  }
+
   const article = (
     <article
       ref={articleRef}
@@ -226,6 +238,16 @@ export default function MarkdownApp() {
 
   return (
     <div className="relative">
+      <ConfirmDialog
+        open={confirmNew}
+        title="Start a new document?"
+        confirmLabel="Start new"
+        destructive
+        onConfirm={startNew}
+        onCancel={() => setConfirmNew(false)}
+      >
+        Your current text in <strong className="text-fg">{doc.name}</strong> will be cleared. Use Export first if you want to keep a copy.
+      </ConfirmDialog>
       {dragging && (
         <div className="pointer-events-none fixed inset-0 z-[60] grid place-items-center bg-bg/80 backdrop-blur-sm">
           <div className="dropzone pointer-events-none px-16 py-12" data-active="true">
@@ -247,12 +269,7 @@ export default function MarkdownApp() {
         <button
           type="button"
           className="btn btn-ghost btn-sm"
-          onClick={() => {
-            if (doc.text && !confirm("Start a new document? Your current text will be replaced.")) return;
-            setDoc({ name: "untitled.md", text: "" });
-            setView("edit");
-            requestAnimationFrame(() => editorRef.current?.focus());
-          }}
+          onClick={() => (doc.text.trim() ? setConfirmNew(true) : startNew())}
         >
           New
         </button>

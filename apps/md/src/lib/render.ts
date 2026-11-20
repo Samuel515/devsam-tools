@@ -88,7 +88,10 @@ export function render(markdown: string): { html: string; toc: TocItem[] } {
     },
   });
 
-  const raw = marked.parse(markdown, { async: false }) as string;
+  const raw = (marked.parse(markdown, { async: false }) as string)
+    // Task-list checkboxes need an accessible name.
+    .replace(/<input checked="" disabled="" type="checkbox">/g, '<input checked="" disabled="" type="checkbox" aria-label="Done">')
+    .replace(/<input disabled="" type="checkbox">/g, '<input disabled="" type="checkbox" aria-label="Not done">');
   // Prerendering on the server only ever renders the built-in sample, which is
   // trusted. Everything a visitor opens is rendered and sanitised in the browser.
   if (typeof window === "undefined") return { html: raw, toc };

@@ -3,6 +3,8 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
 import PdfToolkit from "./PdfToolkit";
 import { pages, type ToolkitPage } from "../data/pages";
 
@@ -13,6 +15,7 @@ const { page: p } = Astro.props;
 ---
 
 <ToolLayout slug="pdf" title={p.title} description={p.description}>
+  {p.slug && <Breadcrumbs slug="pdf" current={p.label} />}
   <ToolHero title={p.h1} intro={p.intro} />
 
   <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
@@ -30,7 +33,7 @@ const { page: p } = Astro.props;
         pages.map((x) => (
           <li>
             <a
-              href={`/${x.slug}`}
+              href={x.slug ? `/${x.slug}/` : "/"}
               class:list={["pill transition-colors hover:text-fg", x.slug === p.slug && "border-accent text-fg"]}
               aria-current={x.slug === p.slug ? "page" : undefined}
             >
@@ -41,6 +44,8 @@ const { page: p } = Astro.props;
       }
     </ul>
   </section>
+
+  <TopicSection topic={p.topic} />
 
   <Explainer
     slug="pdf"

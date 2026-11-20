@@ -11,7 +11,9 @@
     "build": "npm run build --workspaces --if-present",
     "check": "npm run check --workspaces --if-present",
     "og": "node scripts/og.mjs",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "seo": "node scripts/seo-check.mjs",
+    "lighthouse": "node scripts/lighthouse.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",

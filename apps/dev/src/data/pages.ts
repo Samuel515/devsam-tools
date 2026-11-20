@@ -1,4 +1,5 @@
 import type { Mode } from "../components/DevTools";
+import type { Topic } from "@devsam/ui/components/TopicSection.astro";
 
 export type DevPage = {
   slug: string;
@@ -10,6 +11,8 @@ export type DevPage = {
   howTo: string;
   steps: { title: string; body: string }[];
   faqs: { q: string; a: string }[];
+  label: string;
+  topic: Topic;
 };
 
 const privacy = {
@@ -20,6 +23,28 @@ const privacy = {
 export const pages: DevPage[] = [
   {
     slug: "",
+    label: "JSON formatter",
+    topic: {
+      "heading": "Why format JSON?",
+      "paragraphs": [
+        "APIs and log files usually send JSON as one long line, which is almost impossible to read or debug. Formatting adds indentation and line breaks so you can see the structure at a glance.",
+        "Validating at the same time catches the mistakes that break JSON parsers: trailing commas, single quotes, missing commas and unclosed brackets. Each error is reported with its exact line and column."
+      ],
+      "list": [
+        {
+          "title": "Debugging APIs:",
+          "body": "paste a response to inspect nested data."
+        },
+        {
+          "title": "Comparing files:",
+          "body": "Sort keys makes two JSON files line up."
+        },
+        {
+          "title": "Shipping config:",
+          "body": "Minify removes whitespace for the smallest payload."
+        }
+      ]
+    },
     mode: "json",
     title: "JSON Formatter & Validator — Beautify and Minify JSON Online | devsam",
     description: "Format, validate and minify JSON instantly. Shows the exact line and column of errors, sorts keys, and runs in your browser.",
@@ -40,6 +65,28 @@ export const pages: DevPage[] = [
   },
   {
     slug: "base64",
+    label: "Base64",
+    topic: {
+      "heading": "What Base64 is for",
+      "paragraphs": [
+        "Base64 turns any data, including images and files, into plain text made of letters, numbers, + and /. That lets binary data travel through systems that only handle text, such as JSON, email and HTML attributes.",
+        "It isn't encryption: anyone can decode it. It also makes data about a third larger, so use it for embedding small files, not for storing large ones."
+      ],
+      "list": [
+        {
+          "title": "Data URLs:",
+          "body": "embed small images directly in HTML or CSS."
+        },
+        {
+          "title": "APIs and tokens:",
+          "body": "many APIs and JWTs use URL-safe Base64."
+        },
+        {
+          "title": "Email attachments:",
+          "body": "are Base64-encoded behind the scenes."
+        }
+      ]
+    },
     mode: "base64",
     title: "Base64 Encode & Decode Online — Text and Files | devsam",
     description: "Encode text or files to Base64 and decode Base64 back to text or files. UTF-8 safe, URL-safe option, data URLs. Free and private.",
@@ -60,6 +107,14 @@ export const pages: DevPage[] = [
   },
   {
     slug: "url-encode",
+    label: "URL encode",
+    topic: {
+      "heading": "Why URLs need encoding",
+      "paragraphs": [
+        "URLs can only contain a limited set of characters. Spaces, accents and symbols like & or ? must be replaced with percent codes such as %20, or the link breaks or means something different.",
+        "Encoding a query value makes it safe to insert into a link, for example a search term containing &. Decoding turns an unreadable encoded link back into text you can read."
+      ]
+    },
     mode: "url",
     title: "URL Encode & Decode Online — Percent-Encoding Tool | devsam",
     description: "Encode or decode URLs and query strings with percent-encoding, and see any URL broken into its parts and parameters. Free and private.",
@@ -79,6 +134,28 @@ export const pages: DevPage[] = [
   },
   {
     slug: "jwt-decoder",
+    label: "JWT decoder",
+    topic: {
+      "heading": "What's inside a JWT",
+      "paragraphs": [
+        "A JSON Web Token has three parts separated by dots: a header saying how it's signed, a payload of claims such as the user ID and expiry time, and a signature. The header and payload are just Base64URL-encoded JSON, so anyone holding the token can read them.",
+        "Decoding is useful when debugging sign-in problems: you can check which user a token belongs to, which permissions it carries and whether it has expired."
+      ],
+      "list": [
+        {
+          "title": "exp:",
+          "body": "when the token expires. Expired tokens are rejected by servers."
+        },
+        {
+          "title": "iat:",
+          "body": "when the token was issued."
+        },
+        {
+          "title": "sub:",
+          "body": "the subject, usually the user ID."
+        }
+      ]
+    },
     mode: "jwt",
     title: "JWT Decoder — Decode JSON Web Tokens Online Safely | devsam",
     description: "Decode a JWT to read its header and payload, with issued and expiry times shown in your time zone. Runs in your browser; tokens are never stored.",

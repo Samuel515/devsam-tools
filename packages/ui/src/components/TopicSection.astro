@@ -1,0 +1,36 @@
+---
+// Page-specific article content: what makes each landing page unique for search engines
+// and genuinely useful for readers. Paragraphs may contain simple inline HTML (links, <strong>).
+export type Topic = {
+  heading: string;
+  paragraphs: readonly string[];
+  /** Optional bullet list shown after the paragraphs. */
+  list?: readonly { title: string; body: string }[];
+  /** Optional closing paragraph after the list. */
+  outro?: string;
+};
+
+interface Props {
+  topic: Topic;
+}
+const { topic } = Astro.props;
+---
+
+<section class="no-print mx-auto mt-20 max-w-3xl px-4 sm:px-6" aria-labelledby="topic">
+  <article class="prose">
+    <h2 id="topic" class="!mt-0 !border-0 !pb-0 text-2xl sm:text-3xl">{topic.heading}</h2>
+    {topic.paragraphs.map((p) => <p set:html={p} />)}
+    {
+      topic.list && (
+        <ul>
+          {topic.list.map((i) => (
+            <li>
+              <strong>{i.title}</strong> <Fragment set:html={i.body} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    {topic.outro && <p set:html={topic.outro} />}
+  </article>
+</section>

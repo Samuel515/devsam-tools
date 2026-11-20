@@ -27,6 +27,8 @@ export type Tool = {
   hue: number;
   /** Two-letter glyph shown in the tool's icon. */
   glyph: string;
+  /** Closely related tools, shown first in "Related tools". */
+  related: ToolSlug[];
 };
 
 export const tools: Tool[] = [
@@ -37,6 +39,7 @@ export const tools: Tool[] = [
     tagline: "Open, read, edit and export Markdown files.",
     hue: 255,
     glyph: "MD",
+    related: ["dev", "words", "pdf"],
   },
   {
     slug: "image",
@@ -45,6 +48,7 @@ export const tools: Tool[] = [
     tagline: "Convert between PNG, JPG, WebP, AVIF, GIF, BMP, ICO and HEIC.",
     hue: 45,
     glyph: "IM",
+    related: ["compress", "resize", "bg"],
   },
   {
     slug: "pdf2img",
@@ -53,6 +57,7 @@ export const tools: Tool[] = [
     tagline: "Turn PDF pages into PNG, JPG or WebP images.",
     hue: 25,
     glyph: "P→",
+    related: ["pdf", "pdfcompress", "image"],
   },
   {
     slug: "compress",
@@ -61,6 +66,7 @@ export const tools: Tool[] = [
     tagline: "Shrink and resize images in bulk without visible quality loss.",
     hue: 185,
     glyph: "CP",
+    related: ["resize", "image", "pdfcompress"],
   },
   {
     slug: "pdf",
@@ -69,6 +75,7 @@ export const tools: Tool[] = [
     tagline: "Merge, split, rotate, reorder and create PDFs.",
     hue: 350,
     glyph: "PDF",
+    related: ["pdfcompress", "pdf2img", "image"],
   },
   {
     slug: "qr",
@@ -77,6 +84,7 @@ export const tools: Tool[] = [
     tagline: "Make QR codes for links, Wi-Fi, contacts and more.",
     hue: 295,
     glyph: "QR",
+    related: ["password", "resize", "image"],
   },
   {
     slug: "dev",
@@ -85,6 +93,7 @@ export const tools: Tool[] = [
     tagline: "Format JSON, encode Base64 and URLs, and decode JWTs.",
     hue: 85,
     glyph: "{}",
+    related: ["minify", "obfuscate", "md"],
   },
   {
     slug: "minify",
@@ -93,6 +102,7 @@ export const tools: Tool[] = [
     tagline: "Minify JavaScript, CSS, HTML and JSON to make them smaller.",
     hue: 215,
     glyph: "MN",
+    related: ["obfuscate", "dev", "compress"],
   },
   {
     slug: "obfuscate",
@@ -101,6 +111,7 @@ export const tools: Tool[] = [
     tagline: "Protect JavaScript source code from copying and tampering.",
     hue: 140,
     glyph: "OB",
+    related: ["minify", "dev", "password"],
   },
   {
     slug: "bg",
@@ -109,6 +120,7 @@ export const tools: Tool[] = [
     tagline: "Remove image backgrounds automatically with AI, in your browser.",
     hue: 320,
     glyph: "BG",
+    related: ["resize", "image", "compress"],
   },
   {
     slug: "resize",
@@ -117,6 +129,7 @@ export const tools: Tool[] = [
     tagline: "Resize and crop images for Instagram, WhatsApp, passports and more.",
     hue: 60,
     glyph: "RS",
+    related: ["compress", "bg", "image"],
   },
   {
     slug: "pdfcompress",
@@ -125,6 +138,7 @@ export const tools: Tool[] = [
     tagline: "Make PDF files smaller for email and upload limits.",
     hue: 10,
     glyph: "PC",
+    related: ["pdf", "compress", "pdf2img"],
   },
   {
     slug: "words",
@@ -133,6 +147,7 @@ export const tools: Tool[] = [
     tagline: "Count words, characters, sentences and reading time.",
     hue: 235,
     glyph: "WC",
+    related: ["md", "dev", "password"],
   },
   {
     slug: "password",
@@ -141,6 +156,7 @@ export const tools: Tool[] = [
     tagline: "Create strong passwords and passphrases you can trust.",
     hue: 165,
     glyph: "PW",
+    related: ["qr", "dev", "obfuscate"],
   },
 ];
 

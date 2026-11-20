@@ -24,6 +24,47 @@ function grayscale(c: HTMLCanvasElement) {
   ctx.putImageData(img, 0, 0);
 }
 
+/** Settings tried in order, gentlest first, when fitting a PDF under a size limit. */
+const LADDER: { dpi: number; quality: number; gray: boolean }[] = [
+  { dpi: 150, quality: 0.75, gray: false },
+  { dpi: 130, quality: 0.65, gray: false },
+  { dpi: 110, quality: 0.55, gray: false },
+  { dpi: 96, quality: 0.45, gray: false },
+  { dpi: 96, quality: 0.45, gray: true },
+  { dpi: 80, quality: 0.38, gray: true },
+  { dpi: 72, quality: 0.3, gray: true },
+];
+
+/**
+ * Compresses until the PDF fits under maxBytes, trying gentler settings first.
+ * Returns the first result that fits, or the smallest one if none do.
+ */
+export async function compressToSize(
+  buf: ArrayBuffer,
+  maxBytes: number,
+  opts: { password?: string },
+  onProgress?: (step: number, steps: number) => void,
+): Promise<{ bytes: Uint8Array; fits: boolean; dpi: number; gray: boolean }> {
+  // A light rewrite first: text-heavy PDFs often fit without turning pages into images.
+  try {
+    const light = await compressPdf(buf, "basic", { grayscale: false, password: opts.password });
+    if (light.length <= maxBytes) return { bytes: light, fits: true, dpi: 0, gray: false };
+  } catch (e) {
+    if ((e as Error).message.includes("password")) {
+      /* fall through: rendering below handles the password */
+    } else throw e;
+  }
+  let best: { bytes: Uint8Array; dpi: number; gray: boolean } | null = null;
+  for (let i = 0; i < LADDER.length; i++) {
+    onProgress?.(i + 1, LADDER.length);
+    const s = LADDER[i]!;
+    const bytes = await renderPdf(buf, s.dpi, s.quality, s.gray, opts.password);
+    if (!best || bytes.length < best.bytes.length) best = { bytes, dpi: s.dpi, gray: s.gray };
+    if (bytes.length <= maxBytes) return { bytes, fits: true, dpi: s.dpi, gray: s.gray };
+  }
+  return { ...best!, fits: false };
+}
+
 export async function compressPdf(
   buf: ArrayBuffer,
   level: Level,
@@ -38,7 +79,19 @@ export async function compressPdf(
   }
 
   const { dpi, quality } = LEVELS[level];
-  const src = await openPdf(buf, opts.password);
+  return renderPdf(buf, dpi, quality, opts.grayscale, opts.password, onProgress);
+}
+
+/** Re-renders every page as a JPEG at the given resolution and quality. */
+async function renderPdf(
+  buf: ArrayBuffer,
+  dpi: number,
+  quality: number,
+  gray: boolean,
+  password?: string,
+  onProgress?: (done: number, total: number) => void,
+): Promise<Uint8Array> {
+  const src = await openPdf(buf, password);
   const out = await PDFDocument.create();
   const total = src.numPages;
   try {
@@ -46,7 +99,7 @@ export async function compressPdf(
       const page = await src.getPage(n);
       const vp = page.getViewport({ scale: 1 }); // in PDF points
       const canvas = await renderPage(page, dpi / 72);
-      if (opts.grayscale) grayscale(canvas);
+      if (gray) grayscale(canvas);
       const jpg = await canvasToBlob(canvas, "image/jpeg", quality);
       canvas.width = canvas.height = 0;
       page.cleanup();

@@ -1,0 +1,80 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
+import PdfCompressor from "./PdfCompressor";
+import { generalTopic, pages, type PdfPage } from "../data/pages";
+
+interface Props {
+  page?: PdfPage;
+}
+const { page: v } = Astro.props;
+---
+
+<ToolLayout
+  slug="pdfcompress"
+  title={v?.title ?? "Compress PDF — Reduce PDF File Size Online Free, No Upload | devsam"}
+  description={v?.description ?? "Make PDFs smaller for email, WhatsApp and upload limits, or to an exact size like 200 KB. Compress scans by up to 90%. Free, private, nothing is uploaded."}
+>
+  {v && <Breadcrumbs slug="pdfcompress" current={v.label} />}
+  <ToolHero
+    title={v?.h1 ?? "Make your PDF smaller"}
+    intro={v?.intro ?? "Shrink scanned documents and image-heavy PDFs to fit email, WhatsApp and upload limits, without sending them to anyone."}
+    chips={["Files never uploaded", "Free, no limits", "No watermark"]}
+  />
+
+  <section id="tool" class="mx-auto max-w-4xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <PdfCompressor client:load defaultTargetKB={v?.targetKB ?? 0} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="variants">
+    <h2 id="variants" class="label">Also try</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>Compress PDF</a></li>
+      {
+        pages.map((x) => (
+          <li>
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <TopicSection topic={v?.topic ?? generalTopic} />
+
+  <Explainer
+    slug="pdfcompress"
+    howToTitle={v ? `How to ${v.h1.toLowerCase()}` : "How to compress a PDF"}
+    steps={[
+      { title: "Drop your PDF", body: "Add the PDF you want to make smaller. Password-protected PDFs work if you know the password." },
+      { title: "Choose how much", body: "Recommended suits most scans and photos. Light keeps text selectable. Smallest gives the tiniest file." },
+      { title: "Compress and download", body: "See the new size straight away, then download your compressed PDF." },
+    ]}
+    features={[
+      { title: "Up to 90% smaller", body: "Scanned documents and photo-heavy PDFs often shrink by 70–90%, often to well under 1 MB." },
+      { title: "Fits upload limits", body: "Get files small enough for email attachments, WhatsApp, job portals and government forms." },
+      { title: "Keep text option", body: "Light compression keeps text selectable and searchable, for documents that are mostly text." },
+      { title: "Black and white", body: "Turn colour scans into greyscale for an even smaller file that still reads clearly." },
+      { title: "Never bigger", body: "If a PDF is already well compressed, you're told, so you never end up with a larger file." },
+      { title: "Private", body: "Compression runs on your device. Contracts, IDs and statements are never uploaded." },
+    ]}
+    faqs={[
+      ...(v?.faqs ?? []),
+      { q: "Is my PDF uploaded to a server?", a: "No. The PDF is processed entirely in your browser and never leaves your device, so it's safe for confidential documents." },
+      { q: "Which compression level should I use?", a: "Use Recommended for scans, photos and most PDFs you need to send. Use Light for text documents where you need to copy or search text. Use Smallest when the file just has to be as small as possible." },
+      { q: "Why can't I select text after compressing?", a: "Recommended and Smallest re-create each page as a compressed image, which is what makes scans so much smaller. Choose Light if you need selectable text." },
+      { q: "Why didn't my PDF get much smaller?", a: "PDFs that are mostly text and vector graphics are already compact. Light compression helps a little; the bigger levels help most with scans and photos." },
+      { q: "How do I get a PDF under 1 MB or 200 KB?", a: "Try Recommended first. If it's still too big, choose Smallest and tick Black and white. Very long documents may need splitting into parts with the PDF Toolkit." },
+    ]}
+  />
+</ToolLayout>

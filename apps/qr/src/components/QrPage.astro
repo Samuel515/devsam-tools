@@ -3,11 +3,40 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
 import QrApp from "./QrApp";
 
 export const variants = [
   {
     slug: "wifi-qr-code",
+    topic: {
+      "heading": "How Wi-Fi QR codes work",
+      "paragraphs": [
+        "A Wi-Fi QR code stores your network name, password and security type in a standard format that iPhone and Android cameras understand. Scanning it shows a Join network prompt, with no typing needed.",
+        "Your password is encoded into the image itself, so anyone who can see the code can join. Put it where only guests and customers see it, and make a new code if you change the password."
+      ],
+      "list": [
+        {
+          "title": "Security type:",
+          "body": "most home and office routers use WPA, WPA2 or WPA3. Choose WEP only for very old routers."
+        },
+        {
+          "title": "Hidden networks:",
+          "body": "tick Hidden network if your router doesn't broadcast its name."
+        }
+      ]
+    },
+    faqs: [
+      {
+        "q": "Do Wi-Fi QR codes work on iPhone and Android?",
+        "a": "Yes. iPhones running iOS 11 or later and modern Android phones join Wi-Fi straight from the camera app."
+      },
+      {
+        "q": "Is my Wi-Fi password safe?",
+        "a": "It's never sent anywhere: the code is made in your browser. But the password is inside the code, so only display it where you'd share the password."
+      }
+    ],
     kind: "wifi",
     label: "Wi-Fi QR code",
     title: "Wi-Fi QR Code Generator — Share Your Wi-Fi Password Free | devsam",
@@ -17,6 +46,33 @@ export const variants = [
   },
   {
     slug: "whatsapp-qr-code",
+    topic: {
+      "heading": "Using a WhatsApp QR code for your business",
+      "paragraphs": [
+        "A WhatsApp QR code opens a chat with your number in one scan, so customers don't have to save your number first. You can pre-fill a message, such as \"Hi, I'd like to place an order\", so they only need to press send.",
+        "It works with personal and WhatsApp Business numbers. Include your country code, for example +234 for Nigeria, without the leading zero of your local number."
+      ],
+      "list": [
+        {
+          "title": "Shops and restaurants:",
+          "body": "put it on counters, menus and receipts for orders and enquiries."
+        },
+        {
+          "title": "Flyers and packaging:",
+          "body": "let customers reach you for support or repeat orders."
+        }
+      ]
+    },
+    faqs: [
+      {
+        "q": "How do I write my Nigerian number for WhatsApp?",
+        "a": "Use the international format: +234 followed by your number without the first 0. For example, 0801 234 5678 becomes +234 801 234 5678."
+      },
+      {
+        "q": "Can I change the message later?",
+        "a": "The message is stored inside the code, so a new message needs a new code. The code itself never expires."
+      }
+    ],
     kind: "whatsapp",
     label: "WhatsApp QR code",
     title: "WhatsApp QR Code Generator — Free Chat Link QR | devsam",
@@ -26,6 +82,29 @@ export const variants = [
   },
   {
     slug: "vcard-qr-code",
+    topic: {
+      "heading": "What a contact QR code does",
+      "paragraphs": [
+        "A contact QR code holds a vCard, the standard digital business card format. When someone scans it, their phone offers to save your name, number, email, company and website as a new contact, with nothing to type.",
+        "Shorter details make a simpler code that scans faster, so only fill in the fields you need."
+      ],
+      "list": [
+        {
+          "title": "Business cards:",
+          "body": "print it on the back so new contacts save you in one scan."
+        },
+        {
+          "title": "Events and stands:",
+          "body": "display it so visitors can save your details quickly."
+        }
+      ]
+    },
+    faqs: [
+      {
+        "q": "What is a vCard QR code?",
+        "a": "A QR code containing a vCard, the standard contact format phones understand. Scanning it opens a Save contact screen with your details filled in."
+      }
+    ],
     kind: "contact",
     label: "Contact (vCard) QR code",
     title: "vCard QR Code Generator — Business Card QR Code Free | devsam",
@@ -47,6 +126,7 @@ const { variant: v } = Astro.props;
   description={v?.description ??
     "Create free QR codes for links, Wi-Fi, WhatsApp, contacts, email and SMS. Custom colours and logo, PNG and SVG download. Codes never expire."}
 >
+  {v && <Breadcrumbs slug="qr" current={v.label} />}
   <ToolHero
     title={v?.h1 ?? "Create a QR code in seconds"}
     intro={v?.intro ?? "Links, Wi-Fi, WhatsApp, contacts and more. Add your colours and logo, then download a sharp PNG or SVG. Your codes never expire."}
@@ -68,7 +148,7 @@ const { variant: v } = Astro.props;
       {
         variants.map((x) => (
           <li>
-            <a href={`/${x.slug}`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
               {x.label}
             </a>
           </li>
@@ -76,6 +156,28 @@ const { variant: v } = Astro.props;
       }
     </ul>
   </section>
+
+  <TopicSection topic={v?.topic ?? {
+      "heading": "Static QR codes that never expire",
+      "paragraphs": [
+        "Many QR code websites create dynamic codes: the code points to their server, which redirects to your link. If you stop paying or the service shuts down, every printed code breaks.",
+        "Codes made here are static. Your link, Wi-Fi details or contact card are stored inside the code itself, so they work forever and don't depend on anyone's server."
+      ],
+      "list": [
+        {
+          "title": "Test before printing:",
+          "body": "scan the downloaded code with your phone."
+        },
+        {
+          "title": "Keep contrast high:",
+          "body": "dark codes on light backgrounds scan most reliably."
+        },
+        {
+          "title": "Print size:",
+          "body": "at least 2×2 cm for close scanning; bigger for posters seen from a distance."
+        }
+      ]
+    }} />
 
   <Explainer
     slug="qr"
@@ -94,6 +196,7 @@ const { variant: v } = Astro.props;
       { title: "Private", body: "Codes are made in your browser. Your Wi-Fi password and contact details are never uploaded." },
     ]}
     faqs={[
+      ...(v?.faqs ?? []),
       { q: "Do these QR codes expire?", a: "No. The information is stored inside the QR code itself, not behind a redirect, so the code keeps working forever." },
       { q: "Can I use the QR codes for business?", a: "Yes. Codes you make here are free to use for any purpose, including printed marketing and packaging, with no attribution needed." },
       { q: "Will a logo stop the QR code from scanning?", a: "No, as long as the logo stays in the middle. When you add a logo the code automatically uses maximum error correction, which lets it be read even with part of it covered. Always test before printing." },

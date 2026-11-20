@@ -600,9 +600,9 @@ function ImagesTool() {
 
 export const MODES: { value: Mode; label: string; href: string }[] = [
   { value: "merge", label: "Merge", href: "/" },
-  { value: "split", label: "Split", href: "/split-pdf" },
-  { value: "organize", label: "Rotate & reorder", href: "/organize-pdf" },
-  { value: "images", label: "Images to PDF", href: "/images-to-pdf" },
+  { value: "split", label: "Split", href: "/split-pdf/" },
+  { value: "organize", label: "Rotate & reorder", href: "/organize-pdf/" },
+  { value: "images", label: "Images to PDF", href: "/images-to-pdf/" },
 ];
 
 export default function PdfToolkit({ mode }: { mode: Mode }) {

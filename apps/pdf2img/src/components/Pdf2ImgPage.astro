@@ -3,12 +3,69 @@ import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
 import ToolHero from "@devsam/ui/components/ToolHero.astro";
 import AdSlot from "@devsam/ui/components/AdSlot.astro";
 import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
 import PdfToImage from "./PdfToImage";
 
 export const variants = [
-  { slug: "pdf-to-jpg", format: "jpeg", label: "JPG", note: "JPG images are small and open everywhere, ideal for sharing pages by email or chat." },
-  { slug: "pdf-to-png", format: "png", label: "PNG", note: "PNG keeps text and line art perfectly sharp, ideal for slides, diagrams and documents." },
-  { slug: "pdf-to-webp", format: "webp", label: "WebP", note: "WebP images are small and sharp, ideal for putting PDF pages on a website." },
+  {
+    slug: "pdf-to-jpg",
+    format: "jpeg",
+    label: "JPG",
+    note: "JPG images are small and open everywhere, ideal for sharing pages by email or chat.",
+    topic: {
+      heading: "When to turn a PDF into JPG",
+      paragraphs: [
+        "JPG is the easiest way to share a PDF page with someone who can't or won't open PDFs: it previews instantly in WhatsApp, email and every photo app.",
+        "JPG uses lossy compression, which is perfect for scanned pages and photos. For pages with small text or fine lines, Standard (150 DPI) or Print (300 DPI) keeps the text crisp.",
+      ],
+      list: [
+        { title: "Sharing a page in chat:", body: "Standard resolution keeps files small and readable." },
+        { title: "Uploading a scanned document as an image:", body: "convert the page, then use the Image Compressor if the form has a size limit." },
+      ],
+    },
+    faqs: [
+      { q: "How do I convert a PDF to JPG on my phone?", a: "Open this page in your phone's browser, tap the box to choose your PDF, then tap Convert. One page downloads as a JPG; several download as a ZIP." },
+      { q: "Is PDF to JPG good for text documents?", a: "Yes, at Standard or Print resolution. For the sharpest text, choose PNG instead, which never blurs edges." },
+    ],
+  },
+  {
+    slug: "pdf-to-png",
+    format: "png",
+    label: "PNG",
+    note: "PNG keeps text and line art perfectly sharp, ideal for slides, diagrams and documents.",
+    topic: {
+      heading: "When to turn a PDF into PNG",
+      paragraphs: [
+        "PNG is lossless, so every letter and line in your PDF stays perfectly sharp. That makes it the best choice for slides, charts, diagrams, forms and anything with text.",
+        "PNG files are larger than JPG for photo-heavy pages. If a page is mostly a photo or a scan, PDF to JPG gives a much smaller file at the same visual quality.",
+      ],
+      list: [
+        { title: "Slides into a presentation or document:", body: "PNG at Standard resolution looks crisp on any screen." },
+        { title: "Printing a page as an image:", body: "choose Print (300 DPI)." },
+      ],
+    },
+    faqs: [
+      { q: "Does PDF to PNG keep a transparent background?", a: "No. PDF pages are rendered on white, the way they look in a PDF reader. Use the Background Remover afterwards if you need transparency." },
+      { q: "Why are my PNG files so big?", a: "PNG stores every pixel exactly. At Print resolution an A4 page is about 2480×3508 pixels. Use Standard resolution or JPG for smaller files." },
+    ],
+  },
+  {
+    slug: "pdf-to-webp",
+    format: "webp",
+    label: "WebP",
+    note: "WebP images are small and sharp, ideal for putting PDF pages on a website.",
+    topic: {
+      heading: "When to turn a PDF into WebP",
+      paragraphs: [
+        "WebP gives smaller files than JPG or PNG at the same quality, which makes it ideal for putting PDF pages on a website, in a blog post or in an online store.",
+        "All modern browsers display WebP. If the images are for an app or document editor that doesn't support WebP, choose JPG or PNG instead.",
+      ],
+    },
+    faqs: [
+      { q: "Why use WebP for PDF pages on a website?", a: "WebP pages load faster than JPG or PNG at the same visual quality, which helps both visitors and search rankings." },
+    ],
+  },
 ] as const;
 
 interface Props {
@@ -26,6 +83,7 @@ const description = v
 ---
 
 <ToolLayout slug="pdf2img" title={title} description={description}>
+  {v && <Breadcrumbs slug="pdf2img" current={`PDF to ${v.label}`} />}
   <ToolHero
     title={v ? `Convert PDF to ${v.label}` : "Turn PDF pages into images"}
     intro={v
@@ -48,7 +106,7 @@ const description = v
         variants.map((x) => (
           <li>
             <a
-              href={`/${x.slug}`}
+              href={`/${x.slug}/`}
               class:list={["pill transition-colors hover:border-line-strong hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}
             >
               PDF to {x.label}
@@ -58,6 +116,17 @@ const description = v
       }
     </ul>
   </section>
+
+  <TopicSection topic={v?.topic ?? {
+    heading: "Which image format should you choose?",
+    paragraphs: ["Each format suits a different kind of page. Pick by what's on the page and where the images are going."],
+    list: [
+      { title: "JPG:", body: "scanned pages and photos you want to share. Small files that open everywhere." },
+      { title: "PNG:", body: "text, slides, charts and diagrams. Perfectly sharp, larger files." },
+      { title: "WebP:", body: "pages for websites. Small and sharp in every modern browser." },
+    ],
+    outro: "Resolution matters too: Screen (72 DPI) for previews, Standard (150 DPI) for sharing, and Print (300 DPI) for printing or zooming in.",
+  }} />
 
   <Explainer
     slug="pdf2img"
@@ -76,6 +145,7 @@ const description = v
       { title: "Large documents", body: "Thumbnails load as you scroll, so even long PDFs with hundreds of pages stay quick." },
     ]}
     faqs={[
+      ...(v?.faqs ?? []),
       { q: "Is my PDF uploaded to a server?", a: "No. The PDF is opened and rendered by your browser using pdf.js, the open-source PDF engine built into Firefox. It never leaves your device." },
       { q: "Which resolution should I choose?", a: "Standard (150 DPI) suits most uses, such as sharing or inserting into documents. Choose Print (300 DPI) for printing or zooming in on small text, and Screen (72 DPI) for small previews." },
       { q: "Should I convert to JPG or PNG?", a: "Choose JPG for photos and scanned pages, because the files are smaller. Choose PNG for pages with text, charts or diagrams, because it keeps edges perfectly sharp." },

@@ -9,8 +9,9 @@ import { toolUrl, type ToolSlug } from "./tools";
 export function toolConfig(slug: ToolSlug, extra: AstroUserConfig = {}) {
   return defineConfig({
     site: toolUrl(slug),
-    integrations: [react(), sitemap(), sitemapXml()],
-    build: { inlineStylesheets: "auto" },
+    // lastmod tells search engines when pages last changed, so they recrawl updated tools sooner.
+    integrations: [react(), sitemap({ lastmod: new Date() }), sitemapXml()],
+    build: { inlineStylesheets: "always" },
     ...extra,
     vite: {
       ...extra.vite,

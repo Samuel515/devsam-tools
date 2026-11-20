@@ -1,4 +1,4 @@
-export const SAMPLE = `# Welcome to Markdown Reader
+export const SAMPLE = `## Welcome to Markdown Reader
 
 Open any **Markdown** file to read it beautifully formatted, or start typing in the editor. Everything stays in your browser.
 

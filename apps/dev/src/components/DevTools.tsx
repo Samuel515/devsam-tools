@@ -20,9 +20,9 @@ export type Mode = "json" | "base64" | "url" | "jwt";
 
 export const MODES: { value: Mode; label: string; href: string }[] = [
   { value: "json", label: "JSON", href: "/" },
-  { value: "base64", label: "Base64", href: "/base64" },
-  { value: "url", label: "URL encode", href: "/url-encode" },
-  { value: "jwt", label: "JWT", href: "/jwt-decoder" },
+  { value: "base64", label: "Base64", href: "/base64/" },
+  { value: "url", label: "URL encode", href: "/url-encode/" },
+  { value: "jwt", label: "JWT", href: "/jwt-decoder/" },
 ];
 
 // ---------- Shared editor panes ----------

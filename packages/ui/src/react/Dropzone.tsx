@@ -89,15 +89,6 @@ export function Dropzone({ onFiles, accept, multiple = true, title, hint, listen
           setActive(false);
           take(e.dataTransfer.files);
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            inputRef.current?.click();
-          }
-        }}
-        tabIndex={0}
-        role="button"
-        aria-describedby={`${inputId}-hint`}
       >
         <span className={`grid place-items-center rounded-2xl bg-accent-soft text-accent ${compact ? "size-10" : "size-14"}`}>
           <svg className={compact ? "size-5" : "size-6"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -120,6 +111,7 @@ export function Dropzone({ onFiles, accept, multiple = true, title, hint, listen
           ref={inputRef}
           id={inputId}
           type="file"
+          aria-describedby={`${inputId}-hint`}
           className="sr-only"
           accept={accept}
           multiple={multiple}

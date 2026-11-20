@@ -89,15 +89,20 @@ export default function Resizer({ defaultPreset = "ig-post" }: { defaultPreset?:
   useEffect(() => {
     if (!current?.decoded) return;
     const t = setTimeout(async () => {
-      const b = await toBlob(render(current.decoded!, W, H, fit, current.view, bg), fmt, 0.9);
-      setEstimate(formatBytes(b.size));
+      const { blob: b } = await exportOne(current);
+      setEstimate(formatBytes(b.size) + (preset?.maxKB ? ` (limit ${preset.maxKB} KB)` : ""));
     }, 300);
     return () => clearTimeout(t);
   }, [current, W, H, fit, bg, fmt]);
 
   const exportOne = async (it: Item) => {
-    const blob = await toBlob(render(it.decoded!, W, H, fit, it.view, bg), fmt, 0.9);
-    return { blob, name: `${baseName(it.file.name)}-${W}x${H}.${EXT[fmt]}` };
+    const canvas = render(it.decoded!, W, H, fit, it.view, bg);
+    // Presets with a size limit lower the quality until the file fits (PNG becomes JPG).
+    const limit = preset?.maxKB ? preset.maxKB * 1000 : 0;
+    const f: Fmt = limit && fmt === "png" ? "jpeg" : fmt;
+    let blob = await toBlob(canvas, f, 0.92);
+    for (let q = 0.85; limit && blob.size > limit && q >= 0.3; q -= 0.05) blob = await toBlob(canvas, f, q);
+    return { blob, name: `${baseName(it.file.name)}-${W}x${H}.${EXT[f]}` };
   };
 
   const ready = items.filter((i) => i.decoded);

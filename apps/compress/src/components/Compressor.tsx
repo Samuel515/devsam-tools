@@ -24,6 +24,38 @@ const LEVELS: Record<Level, { q: number; avif: number; colors: number; label: st
 };
 
 const SIZES = [0, 3840, 2560, 1920, 1280, 1024, 800, 640];
+const TARGET_KB = [0, 20, 50, 100, 200, 500, 1000];
+
+/**
+ * Finds the highest quality that fits under maxBytes, searching JPEG/WebP quality first and
+ * shrinking the dimensions only if even low quality is too big.
+ */
+async function fitToSize(src: HTMLCanvasElement, maxBytes: number, fmt: "jpeg" | "webp") {
+  const enc = (c: HTMLCanvasElement, q: number) => (fmt === "jpeg" ? encodeMozJpeg(c, q) : encodeImage(c, "webp", { quality: q }));
+  let c = src;
+  let smallest: Blob | null = null;
+  for (let round = 0; round < 6; round++) {
+    const top = await enc(c, 0.92);
+    if (top.size <= maxBytes) return { blob: top, w: c.width, h: c.height, fits: true };
+    const floor = await enc(c, 0.3);
+    if (!smallest || floor.size < smallest.size) smallest = floor;
+    if (floor.size <= maxBytes) {
+      let lo = 0.3, hi = 0.92, best = floor;
+      for (let i = 0; i < 6; i++) {
+        const mid = (lo + hi) / 2;
+        const b = await enc(c, mid);
+        if (b.size <= maxBytes) { best = b; lo = mid; } else hi = mid;
+      }
+      return { blob: best, w: c.width, h: c.height, fits: true };
+    }
+    // Too big even at low quality: shrink the image and try again.
+    const k = Math.max(0.3, Math.min(0.9, Math.sqrt(maxBytes / floor.size) * 0.95));
+    const w = Math.max(16, Math.round(c.width * k));
+    const h = Math.max(16, Math.round(c.height * k));
+    c = resizeCanvas(c, w, h);
+  }
+  return { blob: smallest!, w: c.width, h: c.height, fits: smallest!.size <= maxBytes };
+}
 
 const TARGETS: { value: Target; label: string }[] = [
   { value: "keep", label: "Same as original" },
@@ -48,6 +80,8 @@ type Item = {
   outH?: number;
   /** True when re-encoding didn't help, so the original is kept. */
   kept?: boolean;
+  /** In max-size mode: whether the result fits under the limit. */
+  fits?: boolean;
   key?: string;
   error?: string;
 };
@@ -64,17 +98,18 @@ function resolveTarget(file: File, target: Target): Exclude<Target, "keep"> {
   return "jpeg"; // heic, bmp, tiff
 }
 
-export default function Compressor({ defaultMaxSide = 0 }: { defaultMaxSide?: number }) {
+export default function Compressor({ defaultMaxSide = 0, defaultTargetKB = 0 }: { defaultMaxSide?: number; defaultTargetKB?: number }) {
   const [items, setItems] = useState<Item[]>([]);
   const [level, setLevel] = useState<Level>("balanced");
   const [maxSide, setMaxSide] = useState(defaultMaxSide);
+  const [targetKB, setTargetKB] = useState(defaultTargetKB);
   const [target, setTarget] = useState<Target>("keep");
   const [zipping, setZipping] = useState(false);
   const [compare, setCompare] = useState<Item | null>(null);
   const decoded = useRef(new Map<string, Decoded>());
   const run = useRef(0);
 
-  const key = `${level}|${maxSide}|${target}`;
+  const key = `${level}|${maxSide}|${target}|${targetKB}`;
 
   const addFiles = useCallback((files: File[]) => {
     setItems((list) => [...list, ...files.map((file) => ({ id: uid(), file, status: "working" as const }))]);
@@ -102,18 +137,40 @@ export default function Compressor({ defaultMaxSide = 0 }: { defaultMaxSide?: nu
           const w = Math.round(d.width * scale);
           const h = Math.round(d.height * scale);
           const canvas = scale < 1 ? resizeCanvas(d.canvas, w, h) : d.canvas;
-          const fmt = resolveTarget(it.file, target);
           const L = LEVELS[level];
+          let fmt = resolveTarget(it.file, target);
           let out: Blob;
-          if (fmt === "jpeg") out = await encodeMozJpeg(canvas, L.q);
-          else if (fmt === "png") out = await encodePngQuant(canvas, L.colors);
-          else if (fmt === "avif") out = await encodeImage(canvas, "avif", { quality: L.avif });
-          else out = await encodeImage(canvas, "webp", { quality: L.q });
+          let outW = w;
+          let outH = h;
+          let fits: boolean | undefined;
+          let kept = false;
+          if (targetKB > 0) {
+            // Exact size targets need an adjustable-quality format: WebP if chosen, otherwise JPG.
+            fmt = fmt === "webp" ? "webp" : "jpeg";
+            // Use 1000 bytes per KB: the stricter reading, which every upload form accepts.
+            const limit = targetKB * 1000;
+            const isSameJpeg = fmt === "jpeg" && resolveTarget(it.file, "keep") === "jpeg";
+            if (isSameJpeg && scale === 1 && it.file.size <= limit) {
+              out = it.file;
+              kept = true;
+              fits = true;
+            } else {
+              const r = await fitToSize(canvas, limit, fmt);
+              out = r.blob;
+              outW = r.w;
+              outH = r.h;
+              fits = r.fits;
+            }
+          } else {
+            if (fmt === "jpeg") out = await encodeMozJpeg(canvas, L.q);
+            else if (fmt === "png") out = await encodePngQuant(canvas, L.colors);
+            else if (fmt === "avif") out = await encodeImage(canvas, "avif", { quality: L.avif });
+            else out = await encodeImage(canvas, "webp", { quality: L.q });
+            // Never hand back a bigger file in the same format at the same size.
+            const sameFormat = target === "keep" && resolveTarget(it.file, "keep") === fmt && sniffKind(it.file) !== "heic";
+            kept = sameFormat && scale === 1 && out.size >= it.file.size;
+          }
           if (run.current !== myRun) return;
-
-          // Never hand back a bigger file in the same format at the same size.
-          const sameFormat = target === "keep" && resolveTarget(it.file, "keep") === fmt && sniffKind(it.file) !== "heic";
-          const kept = sameFormat && scale === 1 && out.size >= it.file.size;
           setItems((list) =>
             list.map((x) =>
               x.id === it.id
@@ -124,8 +181,9 @@ export default function Compressor({ defaultMaxSide = 0 }: { defaultMaxSide?: nu
                     kept,
                     out: kept ? it.file : out,
                     outName: kept ? it.file.name : `${baseName(it.file.name)}.${EXT[fmt]}`,
-                    outW: w,
-                    outH: h,
+                    outW,
+                    outH,
+                    fits,
                   }
                 : x,
             ),
@@ -175,8 +233,18 @@ export default function Compressor({ defaultMaxSide = 0 }: { defaultMaxSide?: nu
     <div>
       {/* Settings: three simple choices with good defaults. */}
       <div className="flex flex-wrap items-end gap-x-5 gap-y-3">
-        <div>
-          <p className="field-label">Compression</p>
+        <div className="w-40">
+          <label className="field-label" htmlFor="maxkb">Max file size</label>
+          <select id="maxkb" className="select" value={targetKB} onChange={(e) => setTargetKB(Number(e.target.value))}>
+            {TARGET_KB.map((k) => (
+              <option key={k} value={k}>
+                {k === 0 ? "No limit" : k >= 1000 ? `Under ${k / 1000} MB` : `Under ${k} KB`}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={targetKB ? "pointer-events-none opacity-40" : ""} aria-disabled={targetKB > 0}>
+          <p className="field-label">{targetKB ? "Quality: automatic" : "Compression"}</p>
           <Segmented<Level>
             label="Compression level"
             value={level}
@@ -261,10 +329,12 @@ export default function Compressor({ defaultMaxSide = 0 }: { defaultMaxSide?: nu
                             <span>→</span>
                             <span className="text-fg">{formatBytes(it.out!.size)}</span>
                             {it.kept ? (
-                              <span>already optimised</span>
+                              <span>{targetKB ? "already under the limit" : "already optimised"}</span>
                             ) : (
                               <span className={change < 0 ? "text-success" : ""}>{change}%</span>
                             )}
+                            {targetKB > 0 && it.fits === true && !it.kept && <span className="text-success">✓ fits</span>}
+                            {targetKB > 0 && it.fits === false && <span className="text-danger">couldn't fit the limit</span>}
                             {it.outW && it.width && it.outW !== it.width && (
                               <span>
                                 {it.outW}×{it.outH}

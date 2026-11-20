@@ -1,4 +1,5 @@
 import type { Mode } from "../components/PdfToolkit";
+import type { Topic } from "@devsam/ui/components/TopicSection.astro";
 
 type Step = { title: string; body: string };
 type QA = { q: string; a: string };
@@ -13,6 +14,9 @@ export type ToolkitPage = {
   howTo: string;
   steps: Step[];
   faqs: QA[];
+  /** Short name for breadcrumbs. */
+  label: string;
+  topic: Topic;
 };
 
 const privacyFaq: QA = {
@@ -29,6 +33,24 @@ export const pages: ToolkitPage[] = [
     h1: "Merge PDF files",
     intro: "Combine PDFs into a single document in the order you want. Fast, free and completely private.",
     howTo: "How to merge PDF files",
+    label: "Merge PDFs",
+    topic: {
+      "heading": "When to merge PDFs",
+      "paragraphs": [
+        "Applications, reports and claims often need several documents sent as one file: a CV with certificates, an invoice with receipts, or chapters of a report. Merging keeps them in the order you choose, in a single PDF that's easier to upload and read.",
+        "Pages are copied exactly as they are, so text stays searchable, links keep working and nothing is re-compressed."
+      ],
+      "list": [
+        {
+          "title": "Too big after merging?",
+          "body": "shrink the result with the <a href=\"https://pdfcompress.devsamc.xyz\">PDF Compressor</a>."
+        },
+        {
+          "title": "Need only some pages?",
+          "body": "use Split first to extract them, then merge."
+        }
+      ]
+    },
     steps: [
       { title: "Add your PDFs", body: "Drop two or more PDF files onto the box, or browse for them." },
       { title: "Put them in order", body: "Drag files up or down, or use the arrows. The first file's pages come first." },
@@ -50,6 +72,28 @@ export const pages: ToolkitPage[] = [
     h1: "Split a PDF",
     intro: "Pull out the pages you need, split every page into its own file, or cut the document into ranges.",
     howTo: "How to split a PDF",
+    label: "Split PDF",
+    topic: {
+      "heading": "Three ways to split a PDF",
+      "paragraphs": [
+        "Splitting is useful when you only need part of a document: one page of a contract, a single chapter, or a scanned bundle that should be separate files."
+      ],
+      "list": [
+        {
+          "title": "Pick pages:",
+          "body": "click the pages you want and get them as one new PDF."
+        },
+        {
+          "title": "Every page:",
+          "body": "each page becomes its own PDF, downloaded together as a ZIP."
+        },
+        {
+          "title": "By ranges:",
+          "body": "type ranges like 1-3, 4-10, 11- and get one PDF per range."
+        }
+      ],
+      "outro": "Your original file is never changed, and text in the new PDFs stays selectable."
+    },
     steps: [
       { title: "Drop your PDF", body: "Every page appears as a thumbnail so you can see what you're picking." },
       { title: "Choose how to split", body: "Pick pages to extract into one PDF, split every page, or type ranges like 1-3, 4-10." },
@@ -71,6 +115,14 @@ export const pages: ToolkitPage[] = [
     h1: "Rotate, reorder and delete PDF pages",
     intro: "See every page, drag them into a new order, fix sideways scans and remove the pages you don't need.",
     howTo: "How to rearrange PDF pages",
+    label: "Rotate & reorder",
+    topic: {
+      "heading": "Fixing page order and orientation",
+      "paragraphs": [
+        "Scanned documents often come out in the wrong order, upside down or with blank pages mixed in. Fixing them in a full PDF editor is slow; here you see every page and fix it directly.",
+        "Drag pages into the right order, rotate the ones that are sideways, and delete blank or unwanted pages. Changes are saved into a new PDF, so the original stays as it was."
+      ]
+    },
     steps: [
       { title: "Drop your PDF", body: "Each page appears as a thumbnail." },
       { title: "Edit the pages", body: "Drag pages to reorder. Hover a page to rotate it or delete it, or rotate them all at once." },
@@ -91,6 +143,14 @@ export const pages: ToolkitPage[] = [
     h1: "Rotate PDF pages",
     intro: "Turn sideways or upside-down pages the right way up, one at a time or all together, and save the result permanently.",
     howTo: "How to rotate a PDF",
+    label: "Rotate PDF",
+    topic: {
+      "heading": "Rotating PDF pages permanently",
+      "paragraphs": [
+        "Many PDF readers can turn a page while you view it, but the change isn't saved, so the next person sees it sideways again. Rotating here stores the new orientation inside the file.",
+        "Rotate every page at once for documents scanned the wrong way, or rotate individual pages when only a few are sideways, such as landscape tables in a portrait report."
+      ]
+    },
     steps: [
       { title: "Drop your PDF", body: "Every page appears as a thumbnail." },
       { title: "Rotate", body: "Use Rotate all, or hover a single page and click rotate left or right." },
@@ -110,6 +170,27 @@ export const pages: ToolkitPage[] = [
     h1: "Turn images into a PDF",
     intro: "Combine photos, scans and screenshots into one tidy PDF, with each image on its own page.",
     howTo: "How to convert images to PDF",
+    label: "Images to PDF",
+    topic: {
+      "heading": "Turning photos into a tidy PDF",
+      "paragraphs": [
+        "Phone photos of receipts, forms and handwritten notes are easier to send and store as one PDF. Each image becomes a page in the order you arrange."
+      ],
+      "list": [
+        {
+          "title": "A4 or Letter:",
+          "body": "best for documents you'll print or submit; each image is fitted onto a standard page with an optional margin."
+        },
+        {
+          "title": "Fit image:",
+          "body": "each page takes the exact shape of its photo, ideal for screenshots and photo albums."
+        },
+        {
+          "title": "Sideways photos:",
+          "body": "are turned the right way up automatically using the camera's orientation data."
+        }
+      ]
+    },
     steps: [
       { title: "Add your images", body: "Drop JPG, PNG, WebP or iPhone HEIC photos. Add as many as you like." },
       { title: "Arrange and choose a size", body: "Drag images into order, then pick A4, Letter or Fit image, and a margin." },
@@ -130,6 +211,14 @@ export const pages: ToolkitPage[] = [
     h1: "Convert JPG to PDF",
     intro: "Drop your JPG photos or scans and get one PDF back, ready to email, print or upload to a form.",
     howTo: "How to convert JPG to PDF",
+    label: "JPG to PDF",
+    topic: {
+      "heading": "Why convert JPG to PDF?",
+      "paragraphs": [
+        "Many forms ask for documents as PDF even when you only have photos or scans saved as JPG. Converting puts one or more JPGs into a single PDF that every portal accepts.",
+        "Images are kept at high quality, but very large photos are capped at print resolution so the PDF stays a sensible size. If the portal has a size limit, compress the result with the PDF Compressor."
+      ]
+    },
     steps: [
       { title: "Add JPG files", body: "Drop one or more JPG images. PNG and other formats work too." },
       { title: "Order and size", body: "Drag to reorder, then choose A4, Letter or Fit image." },

@@ -51,6 +51,8 @@ npm install
 npm run dev -w apps/md            # http://localhost:4321
 npm run build -w apps/md          # type-check and build one tool
 npm run build                     # build every tool
+npm run seo                       # check titles, descriptions, H1s, canonicals and sitemaps on every page
+npm run lighthouse                # Lighthouse scores for each tool (needs Microsoft Edge)
 ```
 
 ## Add a new tool
@@ -61,6 +63,12 @@ npm run build                     # build every tool
 4. Write `src/pages/index.astro` and the tool's React component.
 5. Run `npm run og` and `npm run icons` to generate its share card and PNG/ICO favicons in `public/`.
 6. Deploy it as described in [DEPLOY.md](DEPLOY.md).
+
+## SEO
+
+Every tool has a homepage plus landing pages for specific searches, such as `/heic-to-jpg/`, `/compress-image-to-50kb/` and `/split-pdf/`. Each landing page has its own title, description, H1, article (`TopicSection`) and FAQs, so search engines treat them as distinct pages. Landing pages also carry breadcrumb structured data, and each tool lists related tools from `related` in `tools.ts`.
+
+To add a landing page, add an entry to that tool's `src/data/*.ts` file, then run `npm run build && npm run seo`.
 
 ## Ads
 

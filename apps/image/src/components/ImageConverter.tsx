@@ -137,7 +137,7 @@ export default function ImageConverter({ defaultTo }: { defaultTo?: OutFormat })
         <span className="text-sm font-medium text-muted">Convert to</span>
         <div className="seg max-w-full overflow-x-auto" role="radiogroup" aria-label="Output format">
           {OUT_FORMATS.map((f) => (
-            <button key={f.value} type="button" role="radio" aria-checked={format === f.value} aria-pressed={format === f.value} onClick={() => setFormat(f.value)}>
+            <button key={f.value} type="button" role="radio" aria-checked={format === f.value} onClick={() => setFormat(f.value)}>
               {f.label}
             </button>
           ))}

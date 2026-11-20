@@ -1,8 +1,9 @@
 ---
-import ResizePage, { variants } from "../components/ResizePage.astro";
+import ResizePage from "../components/ResizePage.astro";
+import { pages } from "../data/pages";
 
 export function getStaticPaths() {
-  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+  return pages.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
 }
 
 const { variant } = Astro.props;
