@@ -1,0 +1,84 @@
+---
+// Full privacy page. Each app renders it at /privacy.
+import ToolLayout from "../layouts/ToolLayout.astro";
+import { getTool, type ToolSlug } from "../tools";
+import { adsEnabled, site } from "../config";
+
+interface Props {
+  slug: ToolSlug;
+}
+const { slug } = Astro.props;
+const tool = getTool(slug);
+const updated = "20 November 2026";
+---
+
+<ToolLayout
+  slug={slug}
+  title={`Privacy policy · ${tool.name}`}
+  description={`How ${tool.name} handles your files and data. Everything is processed in your browser and nothing is uploaded.`}
+>
+  <article class="prose mx-auto max-w-3xl px-4 pt-14 sm:px-6">
+    <h1>Privacy policy</h1>
+    <p class="label">Last updated {updated}</p>
+
+    <h2>The short version</h2>
+    <p>
+      {tool.name} runs entirely in your web browser. Files and text you open with it are processed on your own device.
+      They are never uploaded to a server, and we never see them.
+    </p>
+
+    <h2>Your files and text</h2>
+    <ul>
+      <li>All processing happens locally using JavaScript and WebAssembly in your browser.</li>
+      <li>We do not have a server that receives, stores or reads your files.</li>
+      <li>
+        Some tools remember your settings, and sometimes your latest text, in your browser's local storage so you can
+        pick up where you left off. This data stays on your device. Clearing your browser data removes it.
+      </li>
+    </ul>
+
+    <h2>Hosting</h2>
+    <p>
+      This site is served by Cloudflare. Like any web host, Cloudflare processes basic technical data, such as IP
+      addresses, to deliver pages and protect against abuse. See
+      <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener" target="_blank">Cloudflare's privacy policy</a>.
+    </p>
+
+    <h2>Advertising</h2>
+    {
+      adsEnabled() ? (
+        <>
+          <p>
+            We show ads through Google AdSense to keep these tools free. Google and its partners may use cookies to
+            serve ads based on your visits to this and other websites. You can opt out of personalised advertising in
+            <a href="https://adssettings.google.com" rel="noopener" target="_blank">Google Ad Settings</a>, or learn
+            more at <a href="https://policies.google.com/technologies/ads" rel="noopener" target="_blank">How Google uses
+            information from sites that use its services</a>.
+          </p>
+          <p>Visitors in the EEA, the UK and Switzerland are asked for consent before personalised ads are shown.</p>
+        </>
+      ) : (
+        <p>
+          This site may show ads through Google AdSense in the future. If it does, this section will explain how
+          Google uses cookies and how to opt out. Ads never have access to your files.
+        </p>
+      )
+    }
+
+    <h2>Analytics</h2>
+    <p>We do not use analytics or tracking scripts.</p>
+
+    <h2>Open source</h2>
+    <p>
+      The full source code is public under the MIT license, so anyone can check exactly what the site does:
+      <a href={site.repo} rel="noopener" target="_blank">{site.repo.replace("https://", "")}</a>.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about privacy? {site.contactEmail ? (
+        <>Email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> or </>
+      ) : null}open an issue on <a href={`${site.repo}/issues`} rel="noopener" target="_blank">GitHub</a>.
+    </p>
+  </article>
+</ToolLayout>

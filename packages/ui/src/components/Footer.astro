@@ -1,0 +1,59 @@
+---
+import { tools, toolUrl, type ToolSlug } from "../tools";
+import { site } from "../config";
+
+interface Props {
+  slug: ToolSlug;
+}
+const { slug } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="no-print mt-24 border-t border-line">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.2fr_2fr]">
+    <div>
+      <a href={site.portfolio} class="inline-flex items-center gap-2.5 font-medium tracking-tight">
+        <span class="grid size-8 place-items-center rounded-lg border border-line-strong font-mono text-[13px] font-semibold text-accent" aria-hidden="true">S/</span>
+        devsam tools
+      </a>
+      <p class="mt-4 max-w-xs text-sm leading-relaxed text-muted">
+        Free, open-source tools that run entirely in your browser. Your files never leave your device.
+      </p>
+      <p class="mt-4 text-sm text-subtle">
+        Built by <a href={site.portfolio} class="text-muted underline-offset-4 hover:text-fg hover:underline">{site.author}</a>
+      </p>
+    </div>
+
+    <div class="grid gap-8 sm:grid-cols-2">
+      <div>
+        <p class="label mb-3">Tools</p>
+        <ul class="space-y-2 text-sm">
+          {
+            tools.map((t) => (
+              <li>
+                <a
+                  href={toolUrl(t.slug)}
+                  class:list={["transition-colors hover:text-fg", t.slug === slug ? "text-fg" : "text-muted"]}
+                >
+                  {t.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="label mb-3">About</p>
+        <ul class="space-y-2 text-sm text-muted">
+          <li><a href="/privacy" class="transition-colors hover:text-fg">Privacy</a></li>
+          <li><a href={site.repo} class="transition-colors hover:text-fg" target="_blank" rel="noopener">Source code (MIT)</a></li>
+          <li><a href={`${site.repo}/issues`} class="transition-colors hover:text-fg" target="_blank" rel="noopener">Report a problem</a></li>
+          <li><a href={site.portfolio} class="transition-colors hover:text-fg">devsamc.xyz</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <p class="mx-auto max-w-6xl px-4 py-6 font-mono text-xs text-subtle sm:px-6">© {year} {site.author}</p>
+  </div>
+</footer>

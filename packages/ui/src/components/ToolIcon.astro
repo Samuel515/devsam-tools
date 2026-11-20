@@ -1,0 +1,21 @@
+---
+import { getTool, type ToolSlug } from "../tools";
+
+interface Props {
+  slug: ToolSlug;
+  size?: "sm" | "md" | "lg";
+}
+const { slug, size = "md" } = Astro.props;
+const tool = getTool(slug);
+const sizes = {
+  sm: "size-7 rounded-lg text-[10px]",
+  md: "size-9 rounded-[10px] text-[11px]",
+  lg: "size-14 rounded-2xl text-base",
+};
+---
+
+<span
+  class:list={["grid shrink-0 place-items-center font-mono font-bold tracking-tight", sizes[size]]}
+  style={`--hue: ${tool.hue}; background: oklch(0.8 0.15 ${tool.hue} / 0.14); color: oklch(0.72 0.16 ${tool.hue}); box-shadow: inset 0 0 0 1px oklch(0.8 0.15 ${tool.hue} / 0.28);`}
+  aria-hidden="true">{tool.glyph}</span
+>
