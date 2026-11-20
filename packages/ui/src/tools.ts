@@ -1,7 +1,25 @@
 // Registry of every tool in the family. Header menus, footers and
 // "other tools" sections are generated from this list.
 
-export type ToolSlug = "md" | "image" | "pdf2img" | "compress" | "pdf" | "qr" | "dev" | "minify" | "obfuscate";
+export type ToolSlug =
+  | "md"
+  | "image"
+  | "pdf2img"
+  | "compress"
+  | "pdf"
+  | "qr"
+  | "dev"
+  | "minify"
+  | "obfuscate"
+  | "bg"
+  | "resize"
+  | "pdfcompress"
+  | "words"
+  | "password"
+  | "colors"
+  | "units"
+  | "diff"
+  | "favicon";
 
 export type Tool = {
   slug: ToolSlug;
@@ -87,6 +105,78 @@ export const tools: Tool[] = [
     tagline: "Protect JavaScript source code from copying and tampering.",
     hue: 140,
     glyph: "OB",
+  },
+  {
+    slug: "bg",
+    name: "Background Remover",
+    short: "Remove background",
+    tagline: "Remove image backgrounds automatically with AI, in your browser.",
+    hue: 320,
+    glyph: "BG",
+  },
+  {
+    slug: "resize",
+    name: "Image Resizer",
+    short: "Resize & crop",
+    tagline: "Resize and crop images for Instagram, WhatsApp, passports and more.",
+    hue: 60,
+    glyph: "RS",
+  },
+  {
+    slug: "pdfcompress",
+    name: "PDF Compressor",
+    short: "Compress PDF",
+    tagline: "Make PDF files smaller for email and upload limits.",
+    hue: 10,
+    glyph: "PC",
+  },
+  {
+    slug: "words",
+    name: "Word Counter",
+    short: "Word counter",
+    tagline: "Count words, characters, sentences and reading time.",
+    hue: 235,
+    glyph: "WC",
+  },
+  {
+    slug: "password",
+    name: "Password Generator",
+    short: "Passwords",
+    tagline: "Create strong passwords and passphrases you can trust.",
+    hue: 165,
+    glyph: "PW",
+  },
+  {
+    slug: "colors",
+    name: "Colour Tools",
+    short: "Colours",
+    tagline: "Generate palettes, pick colours from images and check contrast.",
+    hue: 275,
+    glyph: "CL",
+  },
+  {
+    slug: "units",
+    name: "Unit Converter",
+    short: "Units",
+    tagline: "Convert length, weight, temperature, data, time and more.",
+    hue: 120,
+    glyph: "UN",
+  },
+  {
+    slug: "diff",
+    name: "Text Compare",
+    short: "Diff checker",
+    tagline: "Compare two texts or files and see every difference.",
+    hue: 200,
+    glyph: "DF",
+  },
+  {
+    slug: "favicon",
+    name: "Favicon Generator",
+    short: "Favicons",
+    tagline: "Make a complete favicon set and HTML code from one image.",
+    hue: 35,
+    glyph: "FV",
   },
 ];
 

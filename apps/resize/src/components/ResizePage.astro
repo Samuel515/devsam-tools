@@ -1,0 +1,112 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Resizer from "./Resizer";
+
+export const variants = [
+  {
+    slug: "instagram",
+    preset: "ig-post",
+    label: "Instagram",
+    title: "Resize Images for Instagram — Post, Portrait & Story Sizes | devsam",
+    description: "Resize and crop photos to Instagram's exact sizes: 1080×1080 posts, 1080×1350 portrait and 1080×1920 stories. Free and private.",
+    h1: "Resize photos for Instagram",
+    intro: "Crop to the exact square, portrait or story size so Instagram doesn't cut off the important part. Drag to frame, then download.",
+  },
+  {
+    slug: "whatsapp-dp",
+    preset: "wa-dp",
+    label: "WhatsApp DP",
+    title: "WhatsApp DP Resizer — Fit Full Photo Without Cropping | devsam",
+    description: "Resize a photo for your WhatsApp profile picture or status. Crop it perfectly or fit the full photo with a border. Free, private.",
+    h1: "Resize a photo for WhatsApp",
+    intro: "Make your WhatsApp profile photo or status fit perfectly. Choose Fit with border to keep the whole picture with no crop.",
+  },
+  {
+    slug: "youtube-thumbnail",
+    preset: "yt-thumb",
+    label: "YouTube thumbnail",
+    title: "YouTube Thumbnail Resizer — 1280×720 Online Free | devsam",
+    description: "Resize any image to the YouTube thumbnail size of 1280×720 (16:9), or to a 2560×1440 channel banner. Free, no sign-up.",
+    h1: "Resize an image for a YouTube thumbnail",
+    intro: "Get an exact 1280×720 thumbnail or 2560×1440 channel banner from any image, framed the way you want.",
+  },
+  {
+    slug: "passport-photo",
+    preset: "passport-35x45",
+    label: "Passport photo",
+    title: "Passport Photo Resizer — 35×45 mm and 2×2 inch Free | devsam",
+    description: "Crop a photo to passport size: 35×45 mm (UK, EU, Nigeria) or 2×2 inches (US), at 300 DPI for printing. Free and private.",
+    h1: "Resize a photo to passport size",
+    intro: "Crop your photo to 35×45 mm or 2×2 inches at print resolution. Position your face in the frame, then download.",
+  },
+] as const;
+
+interface Props {
+  variant?: (typeof variants)[number];
+}
+const { variant: v } = Astro.props;
+---
+
+<ToolLayout
+  slug="resize"
+  title={v?.title ?? "Image Resizer — Resize & Crop Photos Online Free | devsam"}
+  description={v?.description ??
+    "Resize and crop images to any size or to presets for Instagram, WhatsApp, YouTube, X, LinkedIn and passports. Batch resize, free, nothing is uploaded."}
+>
+  <ToolHero
+    title={v?.h1 ?? "Resize and crop images, perfectly framed"}
+    intro={v?.intro ?? "Pick a size for Instagram, WhatsApp, YouTube, passports or anything custom. Drag to frame the photo, then download."}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <Resizer client:load defaultPreset={v?.preset ?? "ig-post"} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="variants">
+    <h2 id="variants" class="label">Resize for</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>Any size</a></li>
+      {
+        variants.map((x) => (
+          <li>
+            <a href={`/${x.slug}`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Explainer
+    slug="resize"
+    howToTitle={v ? `How to resize a photo for ${v.label}` : "How to resize an image"}
+    steps={[
+      { title: "Choose a size", body: "Pick a preset for Instagram, WhatsApp, YouTube, Facebook, X, LinkedIn or passports, or enter a custom size." },
+      { title: "Add and frame your photos", body: "Drop one or more images. Drag a photo to choose what stays in frame and use the slider to zoom." },
+      { title: "Download", body: "Download a JPG, PNG or WebP at the exact size. Several photos download together as a ZIP." },
+    ]}
+    features={[
+      { title: "Exact social sizes", body: "Presets follow each platform's recommended upload sizes, so nothing gets cropped or blurred after you post." },
+      { title: "You choose the framing", body: "Drag and zoom to keep faces and products in shot, instead of an automatic centre crop." },
+      { title: "Fit without cropping", body: "Fit with border keeps the whole photo and fills the gap with a colour you pick. Popular for WhatsApp DPs." },
+      { title: "Batch resize", body: "Resize many photos to the same size at once, each with its own framing, and download a ZIP." },
+      { title: "Sharp results", body: "Large reductions use step-by-step downscaling for crisp detail instead of jagged edges." },
+      { title: "Private", body: "Everything happens in your browser. Photos are never uploaded, and location data is removed." },
+    ]}
+    faqs={[
+      { q: "What size should Instagram posts be?", a: "1080×1080 for square posts, 1080×1350 for portrait posts, which take up the most space in the feed, and 1080×1920 for stories and Reels." },
+      { q: "How do I make my whole photo fit as a WhatsApp DP?", a: "Choose WhatsApp, Profile photo, then select Fit with border. The full photo stays visible on a square background in the colour you choose." },
+      { q: "Is the passport size accurate for printing?", a: "Yes. 35×45 mm and 2×2 inch presets are calculated at 300 DPI, the standard for photo printing. Always check your country's rules for head size and background colour." },
+      { q: "Are my photos uploaded?", a: "No. Resizing runs entirely in your browser. Your photos never leave your device." },
+      { q: "Can I make an image bigger?", a: "Yes, but enlarging can't add detail, so very small images may look soft. For the best results, start from the largest original you have." },
+    ]}
+  />
+</ToolLayout>

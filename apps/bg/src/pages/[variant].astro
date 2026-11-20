@@ -1,0 +1,11 @@
+---
+import BgPage, { variants } from "../components/BgPage.astro";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<BgPage variant={variant} />

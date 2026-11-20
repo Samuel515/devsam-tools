@@ -1,0 +1,11 @@
+---
+import ResizePage, { variants } from "../components/ResizePage.astro";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<ResizePage variant={variant} />
