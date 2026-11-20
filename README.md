@@ -53,7 +53,8 @@ npm run build                     # build every tool
 2. Run `node scripts/new-app.mjs <slug>`. This creates the app with its privacy page, 404 page, favicon, ads.txt, robots.txt, headers and Worker config.
 3. Run `npm install` to link the new workspace.
 4. Write `src/pages/index.astro` and the tool's React component.
-5. Deploy it as described in [DEPLOY.md](DEPLOY.md).
+5. Run `npm run og` to generate its social share card at `public/og.png`.
+6. Deploy it as described in [DEPLOY.md](DEPLOY.md).
 
 ## Ads
 

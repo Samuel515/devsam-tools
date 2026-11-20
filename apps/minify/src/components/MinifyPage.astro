@@ -1,0 +1,114 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Minifier from "./Minifier";
+import type { Lang } from "../lib/minify.worker";
+
+export const pages: {
+  slug: string;
+  lang: Lang;
+  name: string;
+  title: string;
+  description: string;
+  intro: string;
+  engine: string;
+  faqs: { q: string; a: string }[];
+}[] = [
+  {
+    slug: "",
+    lang: "js",
+    name: "JavaScript",
+    title: "JavaScript Minifier — Minify JS Online with Terser, Free | devsam",
+    description: "Minify JavaScript online with Terser. Shorten names, remove console calls and see the gzipped size. Free, private, runs in your browser.",
+    intro: "Shrink JavaScript with Terser, the minifier behind most build tools. Paste code or drop a file and it's minified as you type.",
+    engine: "Terser",
+    faqs: [
+      { q: "Which minifier does this use?", a: "Terser, the same engine used by webpack, Vite and most JavaScript build tools. It removes whitespace and comments, shortens variable names and simplifies code." },
+      { q: "Will minified code behave the same?", a: "Yes. Terser only makes changes that keep behaviour identical. If your code relies on function names at runtime, turn off Shorten names." },
+      { q: "What does ES module do?", a: "It lets the minifier understand import and export, and treat the file as strict mode. Turn it off for old-style scripts that rely on global variables." },
+      { q: "Does it support modern JavaScript?", a: "Yes. Classes, async/await, optional chaining, modules and everything else in modern ECMAScript is supported. TypeScript and JSX need compiling first." },
+    ],
+  },
+  {
+    slug: "css-minifier",
+    lang: "css",
+    name: "CSS",
+    title: "CSS Minifier — Minify and Optimise CSS Online Free | devsam",
+    description: "Minify CSS online with CSSO. Merges duplicate rules, shortens colours and values, and shows the gzipped size. Free and private.",
+    intro: "Compress stylesheets with CSSO, which also merges duplicate rules and shortens values, not just whitespace.",
+    engine: "CSSO",
+    faqs: [
+      { q: "What does Merge rules do?", a: "It combines selectors with identical declarations and removes overridden properties. This saves more space, but turn it off if your CSS depends on unusual rule order." },
+      { q: "Are license comments kept?", a: "Comments that start with /*! are kept when Keep license comments is on. All other comments are removed." },
+    ],
+  },
+  {
+    slug: "html-minifier",
+    lang: "html",
+    name: "HTML",
+    title: "HTML Minifier — Minify HTML, Inline CSS and JS Online | devsam",
+    description: "Minify HTML online, including inline styles and scripts. Removes comments and whitespace safely. Free, private, no uploads.",
+    intro: "Remove whitespace, comments and redundant attributes from HTML, and minify inline CSS and JavaScript at the same time.",
+    engine: "html-minifier-terser",
+    faqs: [
+      { q: "Is it safe to minify HTML?", a: "Yes for nearly all pages. Whitespace inside pre and textarea is kept. If inline elements look squashed together, check for spaces you relied on between tags." },
+      { q: "Does it minify inline CSS and JavaScript?", a: "Yes, when Minify inline CSS and JS is on. Style blocks and attributes use clean-css, and scripts use Terser." },
+    ],
+  },
+  {
+    slug: "json-minifier",
+    lang: "json",
+    name: "JSON",
+    title: "JSON Minifier — Compress JSON Online Free | devsam",
+    description: "Minify JSON by removing all whitespace, and check it's valid at the same time. Free, private and runs in your browser.",
+    intro: "Remove every space and line break from JSON to make it as small as possible for APIs, storage and config.",
+    engine: "the browser's built-in JSON engine",
+    faqs: [
+      { q: "Does minifying change my data?", a: "No. Only whitespace between values is removed. Keys, values and order stay exactly the same." },
+      { q: "How do I make JSON readable again?", a: "Use the JSON formatter at dev.devsamc.xyz to pretty-print it with indentation." },
+    ],
+  },
+];
+
+interface Props {
+  page: (typeof pages)[number];
+}
+const { page: p } = Astro.props;
+---
+
+<ToolLayout slug="minify" title={p.title} description={p.description}>
+  <ToolHero title={`Minify ${p.name}`} intro={p.intro} chips={["Runs in your browser", "Code never uploaded", "Free"]} />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <Minifier client:load lang={p.lang} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <Explainer
+    slug="minify"
+    howToTitle={`How to minify ${p.name}`}
+    steps={[
+      { title: "Paste or drop your code", body: `Paste ${p.name} into the left box, or drop a file onto the page.` },
+      { title: "It's minified instantly", body: `${p.engine} minifies it as you type. Adjust the options above the editor if you need to.` },
+      { title: "Copy or download", body: "Copy the result, or download it as a .min file. The size savings, including gzipped size, appear below." },
+    ]}
+    features={[
+      { title: "Four languages", body: "JavaScript with Terser, CSS with CSSO, HTML with html-minifier-terser, and JSON." },
+      { title: "Real savings", body: "See original, minified and gzipped sizes, which is what visitors actually download." },
+      { title: "Instant", body: "Minification runs in a background thread as you type, so even large files stay responsive." },
+      { title: "Clear errors", body: "Syntax errors show the line and column so you can fix the source quickly." },
+      { title: "Your code stays private", body: "Nothing is uploaded. Minify proprietary code without sending it to anyone." },
+      { title: "Free and open source", body: "No limits, no sign-up, and the source is on GitHub." },
+    ]}
+    faqs={[
+      { q: "Is my code uploaded?", a: "No. Minification runs entirely in your browser in a Web Worker. Your code never leaves your device." },
+      ...p.faqs,
+      { q: "Is minification the same as obfuscation?", a: "No. Minifying makes code smaller and is easy to reverse with a formatter. To make JavaScript hard to read, use the JavaScript Obfuscator at obfuscate.devsamc.xyz." },
+    ]}
+  />
+</ToolLayout>

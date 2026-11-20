@@ -1,0 +1,15 @@
+{
+  "name": "@devsam/obfuscate",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@devsam/ui": "*",
+    "javascript-obfuscator": "^5.10.1"
+  }
+}
