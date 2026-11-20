@@ -20,7 +20,7 @@ const files = {
       type: "module",
       scripts: {
         dev: "astro dev",
-        build: "astro check && astro build",
+        build: "astro check && astro build && node ../../scripts/check-assets.mjs dist",
         preview: "astro preview",
         check: "astro check",
       },

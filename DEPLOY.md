@@ -143,3 +143,7 @@ Delete the existing record for that subdomain under **DNS → Records**, then re
 **The Worker name doesn't match**
 
 The project name in Cloudflare must equal the `name` in the app's `wrangler.jsonc`, for example `devsam-bg`.
+
+**"Asset too large … up to 25 MiB"**
+
+Workers reject any single file over 25 MiB. Every app's build now ends with `scripts/check-assets.mjs`, which fails the build early if a file is too large. The Background Remover's build also drops ONNX Runtime's 25.6 MiB WebAssembly file, which Vite copies in but the page never uses: transformers.js loads that engine from the jsDelivr CDN at runtime.
