@@ -1,0 +1,11 @@
+---
+import Pdf2ImgPage, { variants } from "../components/Pdf2ImgPage.astro";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<Pdf2ImgPage variant={variant} />

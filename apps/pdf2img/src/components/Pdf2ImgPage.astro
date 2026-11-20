@@ -1,0 +1,87 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import PdfToImage from "./PdfToImage";
+
+export const variants = [
+  { slug: "pdf-to-jpg", format: "jpeg", label: "JPG", note: "JPG images are small and open everywhere, ideal for sharing pages by email or chat." },
+  { slug: "pdf-to-png", format: "png", label: "PNG", note: "PNG keeps text and line art perfectly sharp, ideal for slides, diagrams and documents." },
+  { slug: "pdf-to-webp", format: "webp", label: "WebP", note: "WebP images are small and sharp, ideal for putting PDF pages on a website." },
+] as const;
+
+interface Props {
+  variant?: (typeof variants)[number];
+}
+const { variant: v } = Astro.props;
+
+const label = v?.label ?? "Image";
+const title = v
+  ? `PDF to ${v.label} Converter — Free, High Quality, No Upload | devsam`
+  : "PDF to Image Converter — PDF to JPG, PNG or WebP Free Online | devsam";
+const description = v
+  ? `Convert PDF pages to ${v.label} images online for free. Pick the pages and resolution, then download. Runs in your browser: nothing is uploaded.`
+  : "Convert PDF pages to JPG, PNG or WebP images online. Choose pages and resolution up to 300 DPI. Free, private and nothing is uploaded.";
+---
+
+<ToolLayout slug="pdf2img" title={title} description={description}>
+  <ToolHero
+    title={v ? `Convert PDF to ${v.label}` : "Turn PDF pages into images"}
+    intro={v
+      ? `${v.note} Pick your pages and download them in seconds.`
+      : "Drop a PDF, pick the pages you want, and download them as JPG, PNG or WebP images in up to print quality."}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <PdfToImage client:load defaultFormat={v?.format ?? "png"} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="variants">
+    <h2 id="variants" class="label">Convert PDF to</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {
+        variants.map((x) => (
+          <li>
+            <a
+              href={`/${x.slug}`}
+              class:list={["pill transition-colors hover:border-line-strong hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}
+            >
+              PDF to {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Explainer
+    slug="pdf2img"
+    howToTitle={`How to convert a PDF to ${label === "Image" ? "images" : label}`}
+    steps={[
+      { title: "Drop your PDF", body: "Drag a PDF onto the box or browse for it. Every page appears as a thumbnail." },
+      { title: "Choose pages and quality", body: "All pages are selected. Click any page to skip it, then choose the format and resolution." },
+      { title: "Download", body: "Click Convert. A single page downloads as an image; several pages download as a ZIP." },
+    ]}
+    features={[
+      { title: "Up to 300 DPI", body: "Screen (72 DPI) for quick previews, Standard (150 DPI) for sharing, Print (300 DPI) for sharp, printable images." },
+      { title: "Pick exact pages", body: "Convert the whole document or only the pages you need, with visual thumbnails to choose from." },
+      { title: "Password-protected PDFs", body: "Enter the password to unlock a protected PDF. It's used only in your browser and never sent anywhere." },
+      { title: "JPG, PNG or WebP", body: "JPG for small files, PNG for crisp text and line art, WebP for the web." },
+      { title: "Private by design", body: "Pages are rendered on your device with the same engine Firefox uses. Your PDF is never uploaded." },
+      { title: "Large documents", body: "Thumbnails load as you scroll, so even long PDFs with hundreds of pages stay quick." },
+    ]}
+    faqs={[
+      { q: "Is my PDF uploaded to a server?", a: "No. The PDF is opened and rendered by your browser using pdf.js, the open-source PDF engine built into Firefox. It never leaves your device." },
+      { q: "Which resolution should I choose?", a: "Standard (150 DPI) suits most uses, such as sharing or inserting into documents. Choose Print (300 DPI) for printing or zooming in on small text, and Screen (72 DPI) for small previews." },
+      { q: "Should I convert to JPG or PNG?", a: "Choose JPG for photos and scanned pages, because the files are smaller. Choose PNG for pages with text, charts or diagrams, because it keeps edges perfectly sharp." },
+      { q: "Can I convert only some pages?", a: "Yes. All pages start selected. Click a page thumbnail to skip it, or use None and then click only the pages you want." },
+      { q: "Can I convert a password-protected PDF?", a: "Yes, if you know the password. You'll be asked for it after you drop the file. The password stays in your browser." },
+      { q: "How are the images named?", a: "Each image is named after your PDF and its page number, for example report-page-03.jpg, so they sort in page order." },
+    ]}
+  />
+</ToolLayout>

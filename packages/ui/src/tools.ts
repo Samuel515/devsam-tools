@@ -1,7 +1,7 @@
 // Registry of every tool in the family. Header menus, footers and
 // "other tools" sections are generated from this list.
 
-export type ToolSlug = "md" | "image" | "pdf2img" | "compress" | "pdf" | "qr" | "dev";
+export type ToolSlug = "md" | "image" | "pdf2img" | "compress" | "pdf" | "qr" | "dev" | "minify" | "obfuscate";
 
 export type Tool = {
   slug: ToolSlug;
@@ -71,6 +71,22 @@ export const tools: Tool[] = [
     tagline: "Format JSON, encode Base64 and URLs, and decode JWTs.",
     hue: 85,
     glyph: "{}",
+  },
+  {
+    slug: "minify",
+    name: "Code Minifier",
+    short: "Minifier",
+    tagline: "Minify JavaScript, CSS, HTML and JSON to make them smaller.",
+    hue: 215,
+    glyph: "MN",
+  },
+  {
+    slug: "obfuscate",
+    name: "JavaScript Obfuscator",
+    short: "Obfuscator",
+    tagline: "Protect JavaScript source code from copying and tampering.",
+    hue: 140,
+    glyph: "OB",
   },
 ];
 
