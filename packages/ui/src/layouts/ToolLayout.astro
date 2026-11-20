@@ -58,7 +58,11 @@ const graph = [
       })();
     </script>
 
+    <!-- Google prefers square icons in multiples of 48px; crawlers also request /favicon.ico. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={`${tool.name} · ${site.family}`} />
