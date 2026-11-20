@@ -42,6 +42,25 @@ const files = {
   ) + "\n",
   "src/pages/privacy.astro": `---\nimport PrivacyPage from "@devsam/ui/components/PrivacyPage.astro";\n---\n\n<PrivacyPage slug="${slug}" />\n`,
   "src/pages/favicon.svg.ts": `import { faviconRoute } from "@devsam/ui/endpoints/favicon.ts";\n\nexport const GET = faviconRoute("${slug}");\n`,
+  "src/pages/404.astro": `---
+import NotFoundPage from "@devsam/ui/components/NotFoundPage.astro";
+---
+
+<NotFoundPage slug="${slug}" />
+`,
+  "wrangler.jsonc": `// Cloudflare Worker that serves this tool's static build. See DEPLOY.md.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "devsam-${slug}",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "${slug}.devsamc.xyz", "custom_domain": true }]
+}
+`,
   "src/pages/ads.txt.ts": `export { GET } from "@devsam/ui/endpoints/ads-txt.ts";\n`,
   "public/robots.txt": `User-agent: *\nAllow: /\n\nSitemap: https://${slug}.devsamc.xyz/sitemap-index.xml\n`,
   "public/_headers": `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`,

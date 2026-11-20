@@ -1,0 +1,12 @@
+// Cloudflare Worker that serves this tool's static build. See DEPLOY.md.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "devsam-pdf2img",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "pdf2img.devsamc.xyz", "custom_domain": true }]
+}

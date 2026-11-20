@@ -1,0 +1,11 @@
+---
+import QrPage, { variants } from "../components/QrPage.astro";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<QrPage variant={variant} />

@@ -1,0 +1,105 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import QrApp from "./QrApp";
+
+export const variants = [
+  {
+    slug: "wifi-qr-code",
+    kind: "wifi",
+    label: "Wi-Fi QR code",
+    title: "Wi-Fi QR Code Generator — Share Your Wi-Fi Password Free | devsam",
+    description: "Make a QR code that connects phones to your Wi-Fi with one scan. Free, private, no sign-up, and your password never leaves your device.",
+    h1: "Create a Wi-Fi QR code",
+    intro: "Guests scan it and join your network instantly, without typing the password. Print it for your home, office or shop.",
+  },
+  {
+    slug: "whatsapp-qr-code",
+    kind: "whatsapp",
+    label: "WhatsApp QR code",
+    title: "WhatsApp QR Code Generator — Free Chat Link QR | devsam",
+    description: "Create a QR code that opens a WhatsApp chat with your number and an optional pre-filled message. Free and no sign-up.",
+    h1: "Create a WhatsApp QR code",
+    intro: "Customers scan it to start a WhatsApp chat with you straight away, with your message already typed in.",
+  },
+  {
+    slug: "vcard-qr-code",
+    kind: "contact",
+    label: "Contact (vCard) QR code",
+    title: "vCard QR Code Generator — Business Card QR Code Free | devsam",
+    description: "Put your name, phone, email and company in a QR code that saves straight to contacts. Free, private, no sign-up.",
+    h1: "Create a contact QR code",
+    intro: "Add it to your business card or email signature. One scan saves your details straight to the phone's contacts.",
+  },
+] as const;
+
+interface Props {
+  variant?: (typeof variants)[number];
+}
+const { variant: v } = Astro.props;
+---
+
+<ToolLayout
+  slug="qr"
+  title={v?.title ?? "QR Code Generator — Free, No Sign-up, Never Expires | devsam"}
+  description={v?.description ??
+    "Create free QR codes for links, Wi-Fi, WhatsApp, contacts, email and SMS. Custom colours and logo, PNG and SVG download. Codes never expire."}
+>
+  <ToolHero
+    title={v?.h1 ?? "Create a QR code in seconds"}
+    intro={v?.intro ?? "Links, Wi-Fi, WhatsApp, contacts and more. Add your colours and logo, then download a sharp PNG or SVG. Your codes never expire."}
+    chips={["Never expires", "No sign-up", "Free for business use"]}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-4 sm:p-6">
+      <QrApp client:load defaultKind={v?.kind ?? "url"} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="types">
+    <h2 id="types" class="label">QR code types</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>QR code generator</a></li>
+      {
+        variants.map((x) => (
+          <li>
+            <a href={`/${x.slug}`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Explainer
+    slug="qr"
+    howToTitle={v ? `How to make a ${v.label}` : "How to make a QR code"}
+    steps={[
+      { title: "Choose a type", body: "Pick Link, Wi-Fi, Contact, WhatsApp, Email, SMS or plain Text, and fill in the details." },
+      { title: "Make it yours", body: "Open Customise design to change colours and shapes or add your logo. The preview updates as you go." },
+      { title: "Download and test", body: "Download a PNG for screens or an SVG for print, then scan it with your phone to check it works." },
+    ]}
+    features={[
+      { title: "Never expires", body: "Codes contain your content directly, not a tracking link, so they work forever and don't depend on any service." },
+      { title: "Logo and colours", body: "Add your logo in the middle, pick brand colours, and choose square, rounded or dot patterns." },
+      { title: "Print-ready SVG", body: "SVG files scale to any size, from business cards to billboards, without getting blurry." },
+      { title: "Wi-Fi sharing", body: "Guests join your network by scanning, without you saying the password out loud." },
+      { title: "WhatsApp chats", body: "Customers scan to open a chat with your business number and a ready-typed message." },
+      { title: "Private", body: "Codes are made in your browser. Your Wi-Fi password and contact details are never uploaded." },
+    ]}
+    faqs={[
+      { q: "Do these QR codes expire?", a: "No. The information is stored inside the QR code itself, not behind a redirect, so the code keeps working forever." },
+      { q: "Can I use the QR codes for business?", a: "Yes. Codes you make here are free to use for any purpose, including printed marketing and packaging, with no attribution needed." },
+      { q: "Will a logo stop the QR code from scanning?", a: "No, as long as the logo stays in the middle. When you add a logo the code automatically uses maximum error correction, which lets it be read even with part of it covered. Always test before printing." },
+      { q: "Should I download PNG or SVG?", a: "Use PNG for websites, documents and social media. Use SVG for printing, because it stays perfectly sharp at any size." },
+      { q: "Why won't my coloured QR code scan?", a: "Scanners need strong contrast. Use a dark colour on a light background. Light codes on dark backgrounds fail on many phones, and you'll see a warning if your colours might cause problems." },
+      { q: "How much text can a QR code hold?", a: "Up to a few thousand characters, but shorter content makes a simpler code that scans faster. For long content, link to a web page instead." },
+    ]}
+  />
+</ToolLayout>
