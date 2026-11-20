@@ -4,7 +4,7 @@ Every tool is its own website on its own subdomain, so **each tool is its own Cl
 
 ## Why the first deploy failed
 
-The first Cloudflare project pointed at the whole repository and ran `npx wrangler deploy` from the root. The root holds nine sites in one npm workspace, so Wrangler couldn't tell which one to deploy:
+The first Cloudflare project pointed at the whole repository and ran `npx wrangler deploy` from the root. The root holds many sites in one npm workspace, so Wrangler couldn't tell which one to deploy:
 
 ```
 ✘ [ERROR] The Cloudflare application detection logic has been run in the root of a workspace
@@ -26,6 +26,11 @@ The fix is one Worker per tool. Each Worker builds only its own app and deploys 
 | Dev Formatter | `devsam-dev` | `apps/dev` | dev.devsamc.xyz |
 | Code Minifier | `devsam-minify` | `apps/minify` | minify.devsamc.xyz |
 | JavaScript Obfuscator | `devsam-obfuscate` | `apps/obfuscate` | obfuscate.devsamc.xyz |
+| Background Remover | `devsam-bg` | `apps/bg` | bg.devsamc.xyz |
+| Image Resizer | `devsam-resize` | `apps/resize` | resize.devsamc.xyz |
+| PDF Compressor | `devsam-pdfcompress` | `apps/pdfcompress` | pdfcompress.devsamc.xyz |
+| Word Counter | `devsam-words` | `apps/words` | words.devsamc.xyz |
+| Password Generator | `devsam-password` | `apps/password` | password.devsamc.xyz |
 
 In the steps below, replace `md` with the tool's short name from the App folder column.
 

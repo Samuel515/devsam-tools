@@ -15,11 +15,7 @@ export type ToolSlug =
   | "resize"
   | "pdfcompress"
   | "words"
-  | "password"
-  | "colors"
-  | "units"
-  | "diff"
-  | "favicon";
+  | "password";
 
 export type Tool = {
   slug: ToolSlug;
@@ -145,38 +141,6 @@ export const tools: Tool[] = [
     tagline: "Create strong passwords and passphrases you can trust.",
     hue: 165,
     glyph: "PW",
-  },
-  {
-    slug: "colors",
-    name: "Colour Tools",
-    short: "Colours",
-    tagline: "Generate palettes, pick colours from images and check contrast.",
-    hue: 275,
-    glyph: "CL",
-  },
-  {
-    slug: "units",
-    name: "Unit Converter",
-    short: "Units",
-    tagline: "Convert length, weight, temperature, data, time and more.",
-    hue: 120,
-    glyph: "UN",
-  },
-  {
-    slug: "diff",
-    name: "Text Compare",
-    short: "Diff checker",
-    tagline: "Compare two texts or files and see every difference.",
-    hue: 200,
-    glyph: "DF",
-  },
-  {
-    slug: "favicon",
-    name: "Favicon Generator",
-    short: "Favicons",
-    tagline: "Make a complete favicon set and HTML code from one image.",
-    hue: 35,
-    glyph: "FV",
   },
 ];
 

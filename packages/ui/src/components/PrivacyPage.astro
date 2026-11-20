@@ -37,6 +37,20 @@ const updated = "20 November 2026";
       </li>
     </ul>
 
+    {
+      slug === "bg" && (
+        <>
+          <h2>AI model download</h2>
+          <p>
+            The first time you remove a background, your browser downloads the AI model files from
+            <a href="https://huggingface.co/privacy" rel="noopener" target="_blank">Hugging Face</a>, which sees a
+            normal download request, including your IP address. Only the model is downloaded. Your photos are processed
+            on your device and are never sent to Hugging Face or anyone else.
+          </p>
+        </>
+      )
+    }
+
     <h2>Hosting</h2>
     <p>
       This site is served by Cloudflare. Like any web host, Cloudflare processes basic technical data, such as IP

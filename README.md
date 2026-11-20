@@ -13,6 +13,11 @@ Free, open-source tools that run entirely in the browser. Files never leave the 
 | Dev Formatter | [dev.devsamc.xyz](https://dev.devsamc.xyz) | `apps/dev` |
 | Code Minifier | [minify.devsamc.xyz](https://minify.devsamc.xyz) | `apps/minify` |
 | JavaScript Obfuscator | [obfuscate.devsamc.xyz](https://obfuscate.devsamc.xyz) | `apps/obfuscate` |
+| Background Remover | [bg.devsamc.xyz](https://bg.devsamc.xyz) | `apps/bg` |
+| Image Resizer | [resize.devsamc.xyz](https://resize.devsamc.xyz) | `apps/resize` |
+| PDF Compressor | [pdfcompress.devsamc.xyz](https://pdfcompress.devsamc.xyz) | `apps/pdfcompress` |
+| Word Counter | [words.devsamc.xyz](https://words.devsamc.xyz) | `apps/words` |
+| Password Generator | [password.devsamc.xyz](https://password.devsamc.xyz) | `apps/password` |
 
 Built by [Samuel Ogbodo](https://devsamc.xyz). MIT licensed.
 
@@ -22,6 +27,7 @@ Built by [Samuel Ogbodo](https://devsamc.xyz). MIT licensed.
 - **Tailwind CSS v4** with one shared design system. Each tool has its own accent colour.
 - **npm workspaces.** Every tool is an app in `apps/`, and shared code lives in `packages/ui`.
 - **WebAssembly codecs** such as mozjpeg, libwebp and libavif run in a Web Worker so pages stay responsive.
+- **In-browser AI** for background removal: BiRefNet (MIT) on capable GPUs and U-2-Net (Apache-2.0) elsewhere, via transformers.js. Models download from Hugging Face once and are cached.
 
 ```
 apps/<tool>/           one Astro site per tool, with its own wrangler.jsonc
