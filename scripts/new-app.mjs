@@ -62,7 +62,7 @@ import NotFoundPage from "@devsam/ui/components/NotFoundPage.astro";
 }
 `,
   "src/pages/ads.txt.ts": `export { GET } from "@devsam/ui/endpoints/ads-txt.ts";\n`,
-  "public/robots.txt": `User-agent: *\nAllow: /\n\nSitemap: https://${slug}.devsamc.xyz/sitemap-index.xml\n`,
+  "public/robots.txt": `User-agent: *\nAllow: /\n\nSitemap: https://${slug}.devsamc.xyz/sitemap.xml\n`,
   "public/_headers": `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
 };
 

@@ -3,12 +3,13 @@ import { defineConfig, type AstroUserConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import { sitemapXml } from "./sitemap-xml";
 import { toolUrl, type ToolSlug } from "./tools";
 
 export function toolConfig(slug: ToolSlug, extra: AstroUserConfig = {}) {
   return defineConfig({
     site: toolUrl(slug),
-    integrations: [react(), sitemap()],
+    integrations: [react(), sitemap(), sitemapXml()],
     build: { inlineStylesheets: "auto" },
     ...extra,
     vite: {

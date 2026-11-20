@@ -115,8 +115,8 @@ Then add `md.devsamc.xyz` under the project's **Custom domains** tab. Pages igno
 
 ## After deploying
 
-- **Check each site.** Open the subdomain, and also `/privacy`, `/ads.txt` and `/sitemap-index.xml`.
-- **Submit to Google.** Add each subdomain in Google Search Console and submit its `sitemap-index.xml`.
+- **Check each site.** Open the subdomain, and also `/privacy`, `/ads.txt` and `/sitemap.xml`.
+- **Submit to Google.** Add each subdomain in Google Search Console and submit `sitemap.xml`. It lists every page of that tool. `sitemap-index.xml` also works.
 - **Apply for AdSense.** Apply once the sites are live and have been indexed for a few weeks. When approved, put your publisher ID and ad slot IDs in `packages/ui/src/config.ts` and push. Every tool picks them up, and `ads.txt` updates automatically.
 
 ## Troubleshooting

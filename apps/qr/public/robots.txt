@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://qr.devsamc.xyz/sitemap-index.xml
+Sitemap: https://qr.devsamc.xyz/sitemap.xml
