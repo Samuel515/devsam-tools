@@ -56,7 +56,7 @@ export function PdfThumb({
     <div
       ref={holder}
       className="grid w-full place-items-center overflow-hidden"
-      style={{ aspectRatio: sideways ? `${ratio} / 1` : `1 / ${ratio}` }}
+      style={{ aspectRatio: `1 / ${Math.max(ratio, 1)}` }}
     >
       {src ? (
         <img
@@ -65,7 +65,8 @@ export function PdfThumb({
           className="max-h-full max-w-full bg-white shadow-sm transition-transform duration-300"
           style={{
             transform: `rotate(${rotation}deg)`,
-            width: sideways ? `${100 / ratio}%` : "100%",
+            // A sideways page must fit the box's width with its height, and the box's height with its width.
+            width: sideways ? `${100 * Math.min(1 / ratio, Math.max(ratio, 1))}%` : "100%",
           }}
           draggable={false}
         />

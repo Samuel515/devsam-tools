@@ -1,0 +1,16 @@
+{
+  "name": "@devsam/pdf",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@devsam/ui": "*",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.5.438"
+  }
+}
