@@ -118,3 +118,28 @@ Then add `md.devsamc.xyz` under the project's **Custom domains** tab. Pages igno
 - **Check each site.** Open the subdomain, and also `/privacy`, `/ads.txt` and `/sitemap-index.xml`.
 - **Submit to Google.** Add each subdomain in Google Search Console and submit its `sitemap-index.xml`.
 - **Apply for AdSense.** Apply once the sites are live and have been indexed for a few weeks. When approved, put your publisher ID and ad slot IDs in `packages/ui/src/config.ts` and push. Every tool picks them up, and `ads.txt` updates automatically.
+
+## Troubleshooting
+
+**"The directory specified by the assets.directory field … does not exist"**
+
+The build command built a different tool than the deploy command deploys. Both commands must use the same tool name. For the Background Remover:
+
+```
+Build command:   npm run build -w apps/bg
+Deploy command:  npx wrangler deploy --config apps/bg/wrangler.jsonc
+```
+
+Check the build log line `Executing user build command:`. It must show exactly one `npm run build -w apps/<tool>`.
+
+**"The Cloudflare application detection logic has been run in the root of a workspace"**
+
+The deploy command is missing `--config apps/<tool>/wrangler.jsonc`.
+
+**"A DNS record already exists"**
+
+Delete the existing record for that subdomain under **DNS → Records**, then retry the deployment.
+
+**The Worker name doesn't match**
+
+The project name in Cloudflare must equal the `name` in the app's `wrangler.jsonc`, for example `devsam-bg`.
