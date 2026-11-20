@@ -15,6 +15,7 @@ export function toolConfig(slug: ToolSlug, extra: AstroUserConfig = {}) {
       ...extra.vite,
       plugins: [tailwindcss(), ...((extra.vite?.plugins as never[]) ?? [])],
       worker: { format: "es", ...extra.vite?.worker },
+      build: { chunkSizeWarningLimit: 4000, ...extra.vite?.build },
     },
   });
 }

@@ -1,0 +1,19 @@
+{
+  "name": "@devsam/image",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@devsam/ui": "*",
+    "@jsquash/avif": "^2.1.1",
+    "@jsquash/webp": "^1.5.0",
+    "gifenc": "^1.0.3",
+    "heic2any": "^0.0.4",
+    "utif": "^3.1.0"
+  }
+}

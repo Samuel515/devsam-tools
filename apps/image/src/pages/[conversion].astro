@@ -1,0 +1,12 @@
+---
+import ConverterPage from "../components/ConverterPage.astro";
+import { conversions } from "../data/conversions";
+
+export function getStaticPaths() {
+  return conversions.map((c) => ({ params: { conversion: c.slug }, props: { conversion: c } }));
+}
+
+const { conversion } = Astro.props;
+---
+
+<ConverterPage conversion={conversion} />

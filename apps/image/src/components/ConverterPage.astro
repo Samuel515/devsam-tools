@@ -1,0 +1,92 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import ImageConverter from "./ImageConverter";
+import { conversions, type Conversion } from "../data/conversions";
+
+interface Props {
+  conversion?: Conversion;
+}
+const { conversion: c } = Astro.props;
+
+const title = c
+  ? `${c.from} to ${c.toLabel} Converter — Free, Private, No Upload | devsam`
+  : "Image Converter — Convert HEIC, WebP, PNG, JPG, AVIF Free Online | devsam";
+const description = c
+  ? `Convert ${c.from} to ${c.toLabel} online for free. Batch convert in your browser with no uploads, no sign-up and no watermark.`
+  : "Convert images between JPG, PNG, WebP, AVIF, HEIC, GIF, BMP, TIFF and ICO. Batch convert in your browser: free, private, nothing is uploaded.";
+const h1 = c ? `Convert ${c.from} to ${c.toLabel}` : "Convert images to any format";
+const intro = c
+  ? `${c.note} Drop your files and they convert instantly, right in your browser.`
+  : "Drop your images, choose a format, and download. Convert one photo or hundreds at once, right in your browser.";
+---
+
+<ToolLayout slug="image" title={title} description={description}>
+  <ToolHero title={h1} intro={intro} />
+
+  <section id="tool" class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <ImageConverter client:load defaultTo={c?.to} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="popular">
+    <h2 id="popular" class="label">Popular conversions</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {
+        conversions.map((x) => (
+          <li>
+            <a
+              href={`/${x.slug}`}
+              class:list={[
+                "pill transition-colors hover:border-line-strong hover:text-fg",
+                x.slug === c?.slug && "border-accent text-fg",
+              ]}
+              aria-current={x.slug === c?.slug ? "page" : undefined}
+            >
+              {x.from} to {x.toLabel}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Explainer
+    slug="image"
+    howToTitle={c ? `How to convert ${c.from} to ${c.toLabel}` : "How to convert an image"}
+    steps={[
+      {
+        title: "Add your images",
+        body: `Drop ${c ? c.from + " files" : "one or more images"} onto the box, browse for them, or paste from your clipboard.`,
+      },
+      {
+        title: c ? `${c.toLabel} is preselected` : "Pick a format",
+        body: c
+          ? `Files convert to ${c.toLabel} straight away. Open Options to change quality or background colour.`
+          : "Choose JPG, PNG, WebP, AVIF, GIF, BMP or ICO. Files convert immediately.",
+      },
+      { title: "Download", body: "Save each file individually, or download them all at once as a ZIP." },
+    ]}
+    features={[
+      { title: "Every common format", body: "Read HEIC, JPG, PNG, WebP, AVIF, GIF, BMP, TIFF, SVG and ICO. Save as JPG, PNG, WebP, AVIF, GIF, BMP or ICO." },
+      { title: "Batch conversion", body: "Convert hundreds of images in one go and download them as a single ZIP file." },
+      { title: "100% private", body: "Images are converted on your device. Nothing is uploaded, so even sensitive photos stay with you." },
+      { title: "iPhone photos", body: "HEIC and HEIF photos from iPhones and iPads convert to JPG or PNG with no extra apps." },
+      { title: "Quality control", body: "Set the quality for JPG, WebP and AVIF, and choose the background colour for transparent images." },
+      { title: "Favicons and icons", body: "Create multi-size ICO files for websites and Windows from any PNG, JPG or SVG." },
+    ]}
+    faqs={[
+      { q: "Are my images uploaded to a server?", a: "No. Conversion happens entirely in your browser using built-in image decoders and WebAssembly. Your images never leave your device." },
+      { q: "How do I convert HEIC to JPG?", a: "Drop your HEIC photos onto the converter with JPG selected. They convert in a few seconds each, and you can download them individually or as a ZIP." },
+      { q: "Is there a file size or number limit?", a: "There's no fixed limit. Very large images, above about 100 megapixels, may be slow on phones or older computers because all the work happens on your device." },
+      { q: "What happens to transparency when converting to JPG?", a: "JPG doesn't support transparency, so transparent areas are filled with a background colour. It's white by default, and you can change it under Options." },
+      { q: "Does converting reduce quality?", a: "PNG, GIF, BMP and ICO are lossless. JPG, WebP and AVIF use compression, set to 90% quality by default, which looks identical to the original for most photos." },
+      { q: "Are animated GIFs supported?", a: "Animated GIFs can be converted, but only the first frame is kept. GIF output is a single still image." },
+    ]}
+  />
+</ToolLayout>
