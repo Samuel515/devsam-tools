@@ -1,0 +1,11 @@
+{
+  "name": "@devsam/ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./react/*": "./src/react/*.tsx",
+    "./lib/*": "./src/lib/*.ts",
+    "./*": "./src/*"
+  }
+}

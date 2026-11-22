@@ -1,0 +1,31 @@
+---
+// A responsive AdSense display slot. Renders nothing until a publisher ID
+// and a slot ID are set in packages/ui/src/config.ts.
+import { adsense, adsEnabled } from "../config";
+
+interface Props {
+  name: keyof typeof adsense.slots;
+  class?: string;
+}
+const { name, class: className } = Astro.props;
+const slot = adsense.slots[name];
+const show = adsEnabled() && slot;
+---
+
+{
+  show && (
+    <aside class:list={["no-print mx-auto max-w-6xl px-4 sm:px-6", className]} aria-label="Advertisement">
+      <p class="label mb-2 text-center">Advertisement</p>
+      <div class="min-h-[100px] overflow-hidden rounded-xl">
+        <ins
+          class="adsbygoogle block"
+          data-ad-client={adsense.client}
+          data-ad-slot={slot}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      </div>
+      <script is:inline>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </aside>
+  )
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://minify.devsamc.xyz/sitemap.xml

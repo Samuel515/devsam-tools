@@ -1,0 +1,11 @@
+---
+import MinifyPage, { pages } from "../components/MinifyPage.astro";
+
+export function getStaticPaths() {
+  return pages.filter((p) => p.slug).map((p) => ({ params: { lang: p.slug }, props: { page: p } }));
+}
+
+const { page } = Astro.props;
+---
+
+<MinifyPage page={page} />

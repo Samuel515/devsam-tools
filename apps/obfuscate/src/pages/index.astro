@@ -1,0 +1,53 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Obfuscator from "../components/Obfuscator";
+---
+
+<ToolLayout
+  slug="obfuscate"
+  title="JavaScript Obfuscator — Protect JS Code Online Free | devsam"
+  description="Obfuscate JavaScript to protect it from copying and tampering. String encryption, control-flow flattening, domain lock. Free, private, runs in your browser."
+>
+  <ToolHero
+    title="Protect your JavaScript"
+    intro="Turn readable JavaScript into code that works the same but is very hard to understand, copy or tamper with."
+    chips={["Code never uploaded", "Free, no limits", "Same behaviour"]}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <Obfuscator client:load />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <Explainer
+    slug="obfuscate"
+    howToTitle="How to obfuscate JavaScript"
+    steps={[
+      { title: "Paste your code", body: "Paste JavaScript into the left box, or drop a .js file onto the page." },
+      { title: "Choose a protection level", body: "Medium suits most code. Open More protection for domain lock, self-defending code and more." },
+      { title: "Obfuscate and download", body: "Click Obfuscate, test the result in your app, then copy it or download the file." },
+    ]}
+    features={[
+      { title: "Renamed identifiers", body: "Variables and functions get meaningless hexadecimal names that reveal nothing about what they do." },
+      { title: "Hidden strings", body: "Text such as messages, keys and URLs is moved into an encoded array, so it can't be found by searching." },
+      { title: "Control-flow flattening", body: "Readable if/else logic is turned into a state machine that's very hard to follow." },
+      { title: "Domain lock", body: "Make the code refuse to run anywhere except your own domains." },
+      { title: "Self-defending", body: "Code that breaks itself if someone beautifies it to study it." },
+      { title: "Private", body: "Obfuscation runs in your browser with javascript-obfuscator. Your source code never leaves your device." },
+    ]}
+    faqs={[
+      { q: "Is my source code uploaded?", a: "No. The obfuscator runs entirely in your browser in a background thread. Your code is never sent to a server, so it's safe for proprietary work." },
+      { q: "Can obfuscated code be reversed?", a: "Obfuscation makes code very hard and slow to understand, but nothing that runs in a browser can be made impossible to reverse. Never put real secrets, such as API keys or passwords, in client-side code." },
+      { q: "Will obfuscation slow my code down?", a: "Low has almost no effect. Medium is typically about 1.5 times slower and High 2–3 times slower, and both make files larger. Use the lowest level that protects what matters." },
+      { q: "Why does my code break after obfuscating?", a: "The usual cause is other code calling your functions by name. Turn off Rename globals, or keep public functions on an object like window.myLib. Also check that the original code has no syntax errors." },
+      { q: "Should I minify or obfuscate?", a: "Minify to make code smaller and faster to load. Obfuscate to make it hard to read. Obfuscated code is usually larger, so don't use it just to save space." },
+      { q: "Which JavaScript versions are supported?", a: "Modern JavaScript up to ES2022, including classes, async/await and modules. Compile TypeScript or JSX to JavaScript first." },
+    ]}
+  />
+</ToolLayout>

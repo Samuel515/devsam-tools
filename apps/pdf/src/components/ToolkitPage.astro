@@ -1,0 +1,64 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
+import PdfToolkit from "./PdfToolkit";
+import { pages, type ToolkitPage } from "../data/pages";
+
+interface Props {
+  page: ToolkitPage;
+}
+const { page: p } = Astro.props;
+---
+
+<ToolLayout slug="pdf" title={p.title} description={p.description}>
+  {p.slug && <Breadcrumbs slug="pdf" current={p.label} />}
+  <ToolHero title={p.h1} intro={p.intro} />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <PdfToolkit client:load mode={p.mode} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="all-pdf-tools">
+    <h2 id="all-pdf-tools" class="label">All PDF tools</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {
+        pages.map((x) => (
+          <li>
+            <a
+              href={x.slug ? `/${x.slug}/` : "/"}
+              class:list={["pill transition-colors hover:text-fg", x.slug === p.slug && "border-accent text-fg"]}
+              aria-current={x.slug === p.slug ? "page" : undefined}
+            >
+              {x.h1}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <TopicSection topic={p.topic} />
+
+  <Explainer
+    slug="pdf"
+    howToTitle={p.howTo}
+    steps={p.steps}
+    features={[
+      { title: "Merge", body: "Combine any number of PDFs into one document, in the order you choose." },
+      { title: "Split and extract", body: "Pull out selected pages, split every page, or split by ranges like 1-3, 4-10." },
+      { title: "Rotate and reorder", body: "Drag pages into a new order, rotate them, or delete the ones you don't need." },
+      { title: "Images to PDF", body: "Turn JPG, PNG, WebP and HEIC photos into a PDF with A4, Letter or fit-to-image pages." },
+      { title: "Lossless", body: "Pages are copied exactly, so text stays sharp and searchable and nothing is re-compressed." },
+      { title: "Private by design", body: "Files are processed on your device and never uploaded. Safe for contracts, IDs and invoices." },
+    ]}
+    faqs={p.faqs}
+  />
+</ToolLayout>

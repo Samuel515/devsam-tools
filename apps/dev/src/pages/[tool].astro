@@ -1,0 +1,12 @@
+---
+import DevPage from "../components/DevPage.astro";
+import { pages } from "../data/pages";
+
+export function getStaticPaths() {
+  return pages.filter((p) => p.slug).map((p) => ({ params: { tool: p.slug }, props: { page: p } }));
+}
+
+const { page } = Astro.props;
+---
+
+<DevPage page={page} />

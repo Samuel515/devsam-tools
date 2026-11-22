@@ -1,0 +1,12 @@
+// Static assets Worker. Deploy settings: README.md
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "devsam-password",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "password.devsamc.xyz", "custom_domain": true }]
+}

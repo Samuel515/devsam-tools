@@ -1,0 +1,81 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import MarkdownApp from "./MarkdownApp";
+import "../styles/md.css";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
+import { variants, mainTopic, type Variant } from "../data/variants";
+
+interface Props {
+  variant?: Variant;
+}
+const { variant: v } = Astro.props;
+---
+
+<ToolLayout
+  slug="md"
+  title={v?.title ?? "Markdown Reader & Viewer Online — Open .md Files Free | devsam"}
+  description={v?.description ?? "Open and read Markdown (.md) files online with a table of contents. Edit with live preview and export to HTML or PDF. Free, private, no upload."}
+>
+  {v && <Breadcrumbs slug="md" current={v.label} />}
+  <ToolHero
+    title={v?.h1 ?? "Read and edit Markdown files, beautifully"}
+    intro={v?.intro ?? "Open any .md file or GitHub README and read it with clean formatting and a table of contents. Edit with a live preview, then export to HTML or PDF."}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <MarkdownApp client:load />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="variants">
+    <h2 id="variants" class="label">Also try</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>{mainTopic.label}</a></li>
+      {
+        variants.map((x) => (
+          <li>
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <TopicSection topic={v?.topic ?? mainTopic.topic} />
+
+  <Explainer
+    slug="md"
+    howToTitle="How to open a Markdown file"
+    steps={[
+      { title: "Open your file", body: "Drop a .md file anywhere on the page, click Open file, or paste a GitHub link with Open URL." },
+      { title: "Read or edit", body: "Read with a table of contents, or switch to Split view to edit with a live preview side by side." },
+      { title: "Export", body: "Download the result as an HTML page or Markdown file, or use Print to save it as a PDF." },
+    ]}
+    features={[
+      { title: "GitHub-flavoured Markdown", body: "Tables, task lists, strikethrough, autolinks and fenced code blocks render just like on GitHub." },
+      { title: "Syntax highlighting", body: "Code blocks are highlighted for dozens of languages, with a copy button on every block." },
+      { title: "Table of contents", body: "Long documents get a sticky outline that tracks where you are as you scroll." },
+      { title: "Open from GitHub", body: "Paste a GitHub or GitLab file link and it opens instantly. Share md.devsamc.xyz/?url=… to send a formatted view." },
+      { title: "Private by design", body: "Files are read by your browser and never uploaded. Your text is autosaved only on this device." },
+      { title: "Export anywhere", body: "Save a standalone HTML file with clean styles, print to PDF, copy the HTML, or download the .md." },
+    ]}
+    faqs={[
+      ...(v?.faqs ?? []),
+      { q: "How do I open a .md file?", a: "Drag the file onto this page or click Open file and choose it. It opens formatted in Read view right away. Nothing is uploaded; your browser reads the file directly." },
+      { q: "Is my document uploaded anywhere?", a: "No. The Markdown Reader runs entirely in your browser. Your files are never sent to a server. Your latest document is saved in your browser's local storage so it's still here when you come back." },
+      { q: "Can I convert Markdown to PDF?", a: "Yes. Click Export, then Print or save as PDF, and choose Save as PDF in the print dialog. Only the document is printed, without the page around it." },
+      { q: "Can I convert Markdown to HTML?", a: "Yes. Click Export, then Download HTML for a standalone page with readable styles, or Copy HTML to paste the markup somewhere else." },
+      { q: "Which Markdown features are supported?", a: "CommonMark plus GitHub-flavoured extensions: tables, task lists, strikethrough, autolinks and fenced code blocks with syntax highlighting. Raw HTML is sanitised for safety." },
+      { q: "Can I read a README from GitHub?", a: "Yes. Click Open URL and paste the link to the file on GitHub or GitLab. The reader fetches the raw file and formats it. Private repositories aren't accessible." },
+    ]}
+  />
+</ToolLayout>

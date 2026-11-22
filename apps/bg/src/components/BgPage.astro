@@ -1,0 +1,151 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
+import BgRemover from "./BgRemover";
+
+export const variants = [
+  {
+    slug: "white-background",
+    label: "Make background white",
+    title: "Make Photo Background White Online Free — AI | devsam",
+    description: "Replace any photo background with clean white in seconds, for product photos, IDs and profile pictures. Free, private, no uploads.",
+    h1: "Make a photo background white",
+    intro: "Perfect for product listings, passport-style photos and profile pictures. The AI finds the subject and puts it on pure white.",
+    bg: "#ffffff",
+    topic: {
+      "heading": "When you need a white background",
+      "paragraphs": [
+        "Online marketplaces, ID applications and professional profiles often require a plain white background. Product photos on white look cleaner, and many document photos are rejected if the background is busy or coloured.",
+        "This page replaces the background with pure white automatically. For passport and ID photos, crop the result to the right size afterwards with the <a href=\"https://resize.devsamc.xyz/passport-photo/\">Image Resizer</a>."
+      ],
+      "list": [
+        {
+          "title": "Product photos:",
+          "body": "shoot on any surface, then put the item on white for listings."
+        },
+        {
+          "title": "ID and profile photos:",
+          "body": "replace a messy room or outdoor scene with a clean white backdrop."
+        }
+      ]
+    },
+  },
+  {
+    slug: "transparent-background",
+    label: "Transparent background",
+    title: "Make Image Background Transparent Online Free | devsam",
+    description: "Remove the background from any image and download a transparent PNG. AI-powered, free, and your photos never leave your device.",
+    h1: "Make an image background transparent",
+    intro: "Get a clean transparent PNG of any person, product or object, ready for designs, slides and stickers.",
+    bg: undefined,
+    topic: {
+      "heading": "What a transparent background is for",
+      "paragraphs": [
+        "A transparent PNG has no background at all, so the subject sits directly on whatever is behind it: a slide, a poster, a website or a sticker.",
+        "Download as PNG to keep the transparency. JPG doesn't support transparency, so a JPG download is placed on white instead."
+      ],
+      "list": [
+        {
+          "title": "Designs and slides:",
+          "body": "drop people or products onto any background."
+        },
+        {
+          "title": "Stickers and logos:",
+          "body": "cut out a shape and use it anywhere."
+        }
+      ]
+    },
+  },
+] as const;
+
+interface Props {
+  variant?: (typeof variants)[number];
+}
+const { variant: v } = Astro.props;
+---
+
+<ToolLayout
+  slug="bg"
+  title={v?.title ?? "Remove Background from Image Free — AI, No Upload | devsam"}
+  description={v?.description ??
+    "Remove image backgrounds automatically with AI. Get a transparent PNG or a new colour background in seconds. Free, unlimited, and your photos never leave your device."}
+>
+  {v && <Breadcrumbs slug="bg" current={v.label} />}
+  <ToolHero
+    title={v?.h1 ?? "Remove the background from any photo"}
+    intro={v?.intro ?? "AI cuts out people, products and objects in seconds. Download a transparent PNG, or put the subject on a new colour."}
+    chips={["Photos never uploaded", "Free and unlimited", "Full resolution"]}
+  />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <BgRemover client:load defaultBg={v?.bg} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="variants">
+    <h2 id="variants" class="label">Also try</h2>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      <li><a href="/" class:list={["pill transition-colors hover:text-fg", !v && "border-accent text-fg"]}>Remove background</a></li>
+      {
+        variants.map((x) => (
+          <li>
+            <a href={`/${x.slug}/`} class:list={["pill transition-colors hover:text-fg", x.slug === v?.slug && "border-accent text-fg"]}>
+              {x.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <TopicSection topic={v?.topic ?? {
+      "heading": "How AI background removal works",
+      "paragraphs": [
+        "The tool uses a segmentation model, an AI trained on many thousands of images to tell the main subject apart from its background. It produces a mask that marks every pixel as subject, background or somewhere in between, which is how hair and soft edges stay natural.",
+        "Everything runs inside your browser, so your photos are never uploaded. The model downloads once and is then cached, so later photos are much faster."
+      ],
+      "list": [
+        {
+          "title": "Best results:",
+          "body": "one clear subject, reasonable light and some contrast with the background."
+        },
+        {
+          "title": "Harder cases:",
+          "body": "glass, smoke, very fine hair against a similar colour, or busy scenes with no obvious subject."
+        }
+      ]
+    }} />
+
+  <Explainer
+    slug="bg"
+    howToTitle="How to remove a background"
+    steps={[
+      { title: "Drop your photo", body: "Add one photo or several. JPG, PNG, WebP and iPhone HEIC photos all work." },
+      { title: "The AI cuts it out", body: "The background is removed automatically. The first time, the AI model downloads once; after that it's fast and works offline." },
+      { title: "Pick a background and download", body: "Keep it transparent, choose a colour or blur the original, then download a PNG or JPG." },
+    ]}
+    features={[
+      { title: "Private AI", body: "The AI runs inside your browser, so your photos are never uploaded to anyone, unlike most background removers." },
+      { title: "Full resolution", body: "Results keep your photo's resolution, up to 4096 pixels on the long side, with no watermark." },
+      { title: "Two AI models", body: "BiRefNet gives the finest edges on computers with a capable graphics card. U-2-Net runs on every other device, so the tool works everywhere." },
+      { title: "New backgrounds", body: "Switch between transparent, white, any colour, or a blurred version of the original for a portrait look." },
+      { title: "Batch processing", body: "Drop several photos at once and download them all as a ZIP of transparent PNGs." },
+      { title: "Fast on modern devices", body: "Uses your graphics card through WebGPU when available, and falls back to the CPU everywhere else." },
+    ]}
+    faqs={[
+      { q: "Are my photos uploaded?", a: "No. The AI model is downloaded to your browser once, and all processing happens on your device. Your photos never leave it." },
+      { q: "Why does the first image take longer?", a: "The first time, your browser downloads the AI model: about 115 MB on computers with a capable graphics card, or 175 MB otherwise. It's then cached, so later visits start quickly and even work offline." },
+      { q: "Is it really free?", a: "Yes. There's no sign-up, no credits, no watermark and no resolution limit beyond 4096 pixels. The site is supported by ads." },
+      { q: "Which photos work best?", a: "Photos with a clear main subject, such as a person, product or pet, and reasonable lighting. Busy scenes with no obvious subject are harder." },
+      { q: "Can I use the results commercially?", a: "Yes. The images are yours. Both AI models allow commercial use: BiRefNet is MIT-licensed and U-2-Net is Apache 2.0 licensed." },
+      { q: "Does it work on phones?", a: "Yes, on recent phones. Processing is slower than on a computer, and the model download is large, so Wi-Fi is recommended the first time." },
+    ]}
+  />
+</ToolLayout>

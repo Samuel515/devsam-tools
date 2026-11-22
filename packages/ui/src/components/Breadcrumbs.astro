@@ -1,0 +1,36 @@
+---
+// Visible breadcrumb trail plus BreadcrumbList structured data, for landing pages.
+import { getTool, toolUrl, type ToolSlug } from "../tools";
+import { site } from "../config";
+
+interface Props {
+  slug: ToolSlug;
+  /** Name of the current landing page, e.g. "HEIC to JPG". */
+  current: string;
+}
+const { slug, current } = Astro.props;
+const tool = getTool(slug);
+const here = new URL(Astro.url.pathname, Astro.site ?? toolUrl(slug)).href;
+
+const items = [
+  { name: site.family, url: site.portfolio + "/?tools" },
+  { name: tool.name, url: toolUrl(slug) + "/" },
+  { name: current, url: here },
+];
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: it.url })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="no-print mx-auto max-w-6xl px-4 pt-6 sm:px-6">
+  <ol class="flex flex-wrap items-center gap-1.5 text-xs text-subtle">
+    <li><a href={items[0]!.url} class="hover:text-fg">{items[0]!.name}</a></li>
+    <li aria-hidden="true">/</li>
+    <li><a href="/" class="hover:text-fg">{tool.name}</a></li>
+    <li aria-hidden="true">/</li>
+    <li aria-current="page" class="text-muted">{current}</li>
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(ld)} />

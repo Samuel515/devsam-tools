@@ -1,0 +1,33 @@
+---
+interface Props {
+  /** The H1. Include the main search phrase, e.g. "Convert images to PNG, JPG, WebP and more". */
+  title: string;
+  intro: string;
+  /** Short reassurance chips shown under the intro. */
+  chips?: string[];
+}
+const { title, intro, chips = ["Runs in your browser", "No uploads", "Free, no sign-up"] } = Astro.props;
+---
+
+<section class="relative overflow-hidden">
+  <div class="bg-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="glow pointer-events-none absolute -top-48 left-1/2 h-[420px] w-[820px] -translate-x-1/2" aria-hidden="true"></div>
+  <div class="relative mx-auto max-w-6xl px-4 pt-12 pb-8 text-center sm:px-6 sm:pt-16 sm:pb-10">
+    <h1 class="mx-auto max-w-3xl text-[clamp(2rem,5vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance">
+      {title}
+    </h1>
+    <p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted text-pretty sm:text-lg">{intro}</p>
+    <ul class="mt-6 flex flex-wrap items-center justify-center gap-2">
+      {
+        chips.map((c) => (
+          <li class="pill">
+            <svg class="size-3 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            {c}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

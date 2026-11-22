@@ -1,0 +1,49 @@
+---
+// Related tools first, then the rest.
+import ToolIcon from "./ToolIcon.astro";
+import { getTool, tools, toolUrl, type ToolSlug } from "../tools";
+
+interface Props {
+  slug: ToolSlug;
+}
+const { slug } = Astro.props;
+const related = getTool(slug).related.map(getTool);
+const rest = tools.filter((t) => t.slug !== slug && !related.some((r) => r.slug === t.slug));
+---
+
+<section class="mx-auto mt-20 max-w-6xl px-4 sm:px-6" aria-labelledby="related-tools">
+  <h2 id="related-tools" class="text-2xl font-semibold tracking-tight sm:text-3xl">Related tools</h2>
+  <ul class="mt-8 grid gap-3 sm:grid-cols-3">
+    {
+      related.map((t) => (
+        <li>
+          <a href={toolUrl(t.slug)} class="card group flex h-full items-start gap-4 p-5 transition-colors hover:border-line-strong">
+            <ToolIcon slug={t.slug} />
+            <span>
+              <span class="flex items-center gap-1.5 font-medium">
+                {t.name}
+                <svg class="size-3.5 text-subtle transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+              <span class="mt-1 block text-sm leading-relaxed text-muted">{t.tagline}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 class="label mt-12">More free tools</h2>
+  <ul class="mt-4 flex flex-wrap gap-2">
+    {
+      rest.map((t) => (
+        <li>
+          <a href={toolUrl(t.slug)} class="pill transition-colors hover:border-line-strong hover:text-fg" title={t.tagline}>
+            {t.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

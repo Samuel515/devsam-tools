@@ -1,0 +1,12 @@
+---
+import WordsPage from "../components/WordsPage.astro";
+import { variants } from "../data/variants";
+
+export function getStaticPaths() {
+  return variants.map((v) => ({ params: { variant: v.slug }, props: { variant: v } }));
+}
+
+const { variant } = Astro.props;
+---
+
+<WordsPage variant={variant} />

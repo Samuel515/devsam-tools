@@ -1,0 +1,16 @@
+{
+  "name": "@devsam/compress",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build && node ../../scripts/check-assets.mjs dist",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@devsam/ui": "*",
+    "@jsquash/jpeg": "^1.6.0",
+    "upng-js": "^2.1.0"
+  }
+}

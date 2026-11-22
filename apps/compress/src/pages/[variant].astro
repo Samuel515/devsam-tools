@@ -1,0 +1,12 @@
+---
+import CompressPage from "../components/CompressPage.astro";
+import { pages } from "../data/pages";
+
+export function getStaticPaths() {
+  return pages.map((p) => ({ params: { variant: p.slug }, props: { page: p } }));
+}
+
+const { page } = Astro.props;
+---
+
+<CompressPage page={page} />

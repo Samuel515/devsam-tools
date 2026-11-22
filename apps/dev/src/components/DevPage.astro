@@ -1,0 +1,45 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import Breadcrumbs from "@devsam/ui/components/Breadcrumbs.astro";
+import TopicSection from "@devsam/ui/components/TopicSection.astro";
+import DevTools from "./DevTools";
+import type { DevPage } from "../data/pages";
+
+interface Props {
+  page: DevPage;
+}
+const { page: p } = Astro.props;
+---
+
+<ToolLayout slug="dev" title={p.title} description={p.description}>
+  {p.slug && <Breadcrumbs slug="dev" current={p.label} />}
+  <ToolHero title={p.h1} intro={p.intro} chips={["Runs in your browser", "Nothing is sent", "Works offline"]} />
+
+  <section id="tool" class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="card p-3 sm:p-5">
+      <DevTools client:load mode={p.mode} />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <TopicSection topic={p.topic} />
+
+  <Explainer
+    slug="dev"
+    howToTitle={p.howTo}
+    steps={p.steps}
+    features={[
+      { title: "JSON formatter", body: "Pretty-print, validate, sort and minify JSON, with the exact location of any error." },
+      { title: "Base64", body: "Encode and decode text and files, including URL-safe Base64 and data URLs." },
+      { title: "URL encoding", body: "Percent-encode and decode text, and break any URL into its parts and parameters." },
+      { title: "JWT decoder", body: "Read token headers and claims with readable issued and expiry times." },
+      { title: "Instant", body: "Results update as you type, with no buttons to press and no waiting for a server." },
+      { title: "Private", body: "Nothing you paste leaves your browser, so it's safe for API keys, logs and customer data." },
+    ]}
+    faqs={p.faqs}
+  />
+</ToolLayout>

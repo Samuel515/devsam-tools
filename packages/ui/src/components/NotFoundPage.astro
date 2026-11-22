@@ -1,0 +1,22 @@
+---
+// Shared 404 page. Each app renders it at src/pages/404.astro.
+import ToolLayout from "../layouts/ToolLayout.astro";
+import OtherTools from "./OtherTools.astro";
+import { getTool, type ToolSlug } from "../tools";
+
+interface Props {
+  slug: ToolSlug;
+}
+const { slug } = Astro.props;
+const tool = getTool(slug);
+---
+
+<ToolLayout slug={slug} title={`Page not found · ${tool.name}`} description="This page doesn't exist." noindex>
+  <section class="mx-auto max-w-2xl px-4 pt-24 text-center sm:px-6">
+    <p class="font-mono text-sm text-accent">404</p>
+    <h1 class="mt-3 text-4xl font-semibold tracking-tight">Page not found</h1>
+    <p class="mt-4 text-muted">That link may be broken, or the page may have moved.</p>
+    <a href="/" class="btn btn-primary mt-8">Open {tool.name}</a>
+  </section>
+  <OtherTools slug={slug} />
+</ToolLayout>

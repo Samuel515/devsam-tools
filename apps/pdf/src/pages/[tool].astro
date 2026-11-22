@@ -1,0 +1,12 @@
+---
+import ToolkitPage from "../components/ToolkitPage.astro";
+import { pages } from "../data/pages";
+
+export function getStaticPaths() {
+  return pages.filter((p) => p.slug).map((p) => ({ params: { tool: p.slug }, props: { page: p } }));
+}
+
+const { page } = Astro.props;
+---
+
+<ToolkitPage page={page} />
