@@ -1,15 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Dropzone } from "@devsam/ui/react/Dropzone";
-import { Icon, icons, Spinner } from "@devsam/ui/react/ui";
+import { Icon, icons, Segmented, Spinner } from "@devsam/ui/react/ui";
 import { baseName, downloadBlob, formatBytes, uid, zipBlobs } from "@devsam/ui/lib/files";
 import { decodeImage, IMAGE_ACCEPT, resizeCanvas } from "@devsam/ui/lib/image";
 import type { Device, In, Out } from "../lib/bg.worker";
+import { looksLikeInk, removePaper } from "../lib/ink";
+
+/** "photo": AI cutout of the main subject. "ink": clear the paper around and inside strokes. */
+type Mode = "photo" | "ink";
 
 type Bg = { kind: "transparent" } | { kind: "color"; color: string } | { kind: "blur" };
 
 type Item = {
   id: string;
   file: File;
+  mode: Mode;
+  /** Photo mode result for an image that looks like a signature or drawing. */
+  inkHint?: boolean;
   status: "queued" | "working" | "done" | "error";
   /** Source pixels (orientation applied, capped in size). */
   source?: HTMLCanvasElement;
@@ -109,8 +116,15 @@ function compose(item: Item, bg: Bg): HTMLCanvasElement {
   return out;
 }
 
+const MODES: { value: Mode; label: string }[] = [
+  { value: "photo", label: "Photo" },
+  { value: "ink", label: "Signature or logo" },
+];
+
 export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
   const [items, setItems] = useState<Item[]>([]);
+  const [mode, setMode] = useState<Mode>("photo");
+  const [strength, setStrength] = useState(0.6);
   const [selected, setSelected] = useState<string | null>(null);
   const [bg, setBg] = useState<Bg>(defaultBg ? { kind: "color", color: defaultBg } : { kind: "transparent" });
   const [model, setModel] = useState<{ state: "idle" | "loading" | "ready" | "error"; pct: number; mb: string; device?: string; error?: string }>({
@@ -140,13 +154,20 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
 
   const update = (id: string, patch: Partial<Item>) => setItems((l) => l.map((x) => (x.id === id ? { ...x, ...patch } : x)));
 
-  const add = useCallback((files: File[]) => {
-    const fresh = files.map((file) => ({ id: uid(), file, status: "queued" as const }));
-    setItems((l) => [...l, ...fresh]);
-    setSelected((s) => s ?? fresh[0]?.id ?? null);
+  const loadModel = () => {
     setModel((m) => (m.state === "idle" ? { ...m, state: "loading" } : m));
     getWorker().postMessage({ type: "load", device: device() } satisfies In);
-  }, []);
+  };
+
+  const add = useCallback(
+    (files: File[]) => {
+      const fresh = files.map((file) => ({ id: uid(), file, mode, status: "queued" as const }));
+      setItems((l) => [...l, ...fresh]);
+      setSelected((s) => s ?? fresh[0]?.id ?? null);
+      if (mode === "photo") loadModel();
+    },
+    [mode],
+  );
 
   // Process the queue one image at a time.
   useEffect(() => {
@@ -160,10 +181,16 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
         const d = await decodeImage(next.file);
         const s = Math.min(1, MAX_SIDE / Math.max(d.width, d.height));
         const source = s < 1 ? resizeCanvas(d.canvas, Math.round(d.width * s), Math.round(d.height * s)) : d.canvas;
-        const r = await segment(await toBlob(source, "image/png"));
-        const cutout = applyMask(source, r.mask, r.width, r.height);
-        const original = URL.createObjectURL(await toBlob(source, "image/jpeg", 0.9));
-        update(next.id, { status: "done", source, cutout, original, ms: r.ms });
+        const original = next.original ?? URL.createObjectURL(await toBlob(source, "image/jpeg", 0.9));
+        if (next.mode === "ink") {
+          const t = performance.now();
+          const cutout = removePaper(source, strength);
+          update(next.id, { status: "done", source, cutout, original, ms: performance.now() - t, inkHint: false });
+        } else {
+          const r = await segment(await toBlob(source, "image/png"));
+          const cutout = applyMask(source, r.mask, r.width, r.height);
+          update(next.id, { status: "done", source, cutout, original, ms: r.ms, inkHint: looksLikeInk(source) });
+        }
       } catch (e) {
         update(next.id, { status: "error", error: (e as Error).message });
       } finally {
@@ -174,6 +201,23 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
   }, [items]);
 
   const current = items.find((i) => i.id === selected) ?? items[0];
+
+  /** Switches the mode for new images and redoes the current one. */
+  const changeMode = (m: Mode) => {
+    setMode(m);
+    if (m === "photo") loadModel();
+    if (current && current.mode !== m) update(current.id, { mode: m, status: "queued", inkHint: false });
+  };
+
+  // Re-run the current signature/logo image when the clean-up strength changes.
+  const strengthTimer = useRef<number | undefined>(undefined);
+  const changeStrength = (v: number) => {
+    setStrength(v);
+    window.clearTimeout(strengthTimer.current);
+    strengthTimer.current = window.setTimeout(() => {
+      if (current?.mode === "ink" && current.status === "done") update(current.id, { status: "queued" });
+    }, 250);
+  };
 
   // Preview of the current image with the current background.
   useEffect(() => {
@@ -213,9 +257,18 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
   if (!items.length) {
     return (
       <div>
-        <Dropzone onFiles={add} accept={IMAGE_ACCEPT} title="Drop a photo to remove its background" hint="JPG · PNG · WebP · HEIC · works best with a clear subject" />
+        <div className="mb-3 flex justify-center">
+          <Segmented<Mode> label="Image type" value={mode} onChange={setMode} options={MODES} />
+        </div>
+        {mode === "photo" ? (
+          <Dropzone onFiles={add} accept={IMAGE_ACCEPT} title="Drop a photo to remove its background" hint="JPG · PNG · WebP · HEIC · works best with a clear subject" />
+        ) : (
+          <Dropzone onFiles={add} accept={IMAGE_ACCEPT} title="Drop a signature, logo or drawing" hint="Photo or scan on paper or a plain background · JPG · PNG · HEIC" />
+        )}
         <p className="mt-3 text-center text-xs text-subtle">
-          The AI model downloads once the first time (115–175 MB, depending on your device), then works offline. Your photos are never uploaded.
+          {mode === "photo"
+            ? "The AI model downloads once the first time (115–175 MB, depending on your device), then works offline. Your photos are never uploaded."
+            : "Removes the paper around and inside every stroke, even in shadows. Instant, and nothing is uploaded."}
         </p>
       </div>
     );
@@ -300,6 +353,42 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
       {/* Controls */}
       <aside className="space-y-5">
         <div>
+          <p className="field-label">Image type</p>
+          <Segmented<Mode> label="Image type" value={current?.mode ?? mode} onChange={changeMode} options={MODES} />
+          {current?.status === "done" && current.mode === "photo" && current.inkHint && (
+            <p className="mt-2 rounded-lg bg-accent-soft px-3 py-2 text-xs leading-relaxed">
+              This looks like a signature or drawing.{" "}
+              <button type="button" className="font-medium text-accent underline underline-offset-2" onClick={() => changeMode("ink")}>
+                Switch to Signature or logo
+              </button>{" "}
+              to clear the paper inside loops and letters too.
+            </p>
+          )}
+        </div>
+
+        {(current?.mode ?? mode) === "ink" && (
+          <div>
+            <label htmlFor="strength" className="field-label">
+              Clean-up
+            </label>
+            <input
+              id="strength"
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={strength}
+              onChange={(e) => changeStrength(Number(e.target.value))}
+              className="w-full accent-[var(--accent)]"
+            />
+            <div className="flex justify-between text-xs text-subtle">
+              <span>Keep faint marks</span>
+              <span>Remove more</span>
+            </div>
+          </div>
+        )}
+
+        <div>
           <p className="field-label">Background</p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -344,7 +433,7 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
             <p className="text-xs text-subtle">
               {current.cutout!.width}×{current.cutout!.height}
               {current.ms ? ` · done in ${(current.ms / 1000).toFixed(1)} s` : ""}
-              {model.device ? ` · ${model.device === "webgpu" ? "GPU" : "CPU"}` : ""}
+              {current.mode === "photo" && model.device ? ` · ${model.device === "webgpu" ? "GPU" : "CPU"}` : ""}
             </p>
           </div>
         )}
@@ -367,7 +456,9 @@ export default function BgRemover({ defaultBg }: { defaultBg?: string }) {
         </button>
 
         <p className="text-xs leading-relaxed text-subtle">
-          Tip: photos with a clear subject and good lighting give the cleanest edges. Hair and fur work too.
+          {(current?.mode ?? mode) === "ink"
+            ? "Tip: a flat, evenly lit photo of the paper works best. Raise Clean-up if specks of paper texture remain."
+            : "Tip: photos with a clear subject and good lighting give the cleanest edges. Hair and fur work too."}
         </p>
       </aside>
     </div>
