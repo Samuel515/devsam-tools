@@ -15,7 +15,8 @@ export type ToolSlug =
   | "resize"
   | "pdfcompress"
   | "words"
-  | "password";
+  | "password"
+  | "qrscan";
 
 export type Tool = {
   slug: ToolSlug;
@@ -84,7 +85,16 @@ export const tools: Tool[] = [
     tagline: "Make QR codes for links, Wi-Fi, contacts and more.",
     hue: 295,
     glyph: "QR",
-    related: ["password", "resize", "image"],
+    related: ["qrscan", "password", "resize"],
+  },
+  {
+    slug: "qrscan",
+    name: "QR Code Scanner",
+    short: "QR scanner",
+    tagline: "Scan QR codes with your camera or an image.",
+    hue: 280,
+    glyph: "SC",
+    related: ["qr", "image", "password"],
   },
   {
     slug: "dev",

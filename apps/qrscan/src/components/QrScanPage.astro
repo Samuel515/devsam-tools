@@ -1,0 +1,52 @@
+---
+import ToolLayout from "@devsam/ui/layouts/ToolLayout.astro";
+import ToolHero from "@devsam/ui/components/ToolHero.astro";
+import AdSlot from "@devsam/ui/components/AdSlot.astro";
+import Explainer from "@devsam/ui/components/Explainer.astro";
+import QrScanTool from "./QrScanTool";
+---
+
+<ToolLayout
+  slug="qrscan"
+  title="QR Code Scanner — Scan with Camera or Image | devsam"
+  description="Scan QR codes with your camera or by uploading an image. Fast, private, and works in your browser. Copy text, open links, and decode QR codes instantly."
+>
+  <ToolHero
+    title="Scan a QR code"
+    intro="Use your camera for live scanning, or drop an image when the code is on your screen. Everything is decoded in your browser."
+    chips={["Camera or image", "Instant decode", "Private"]}
+  />
+
+  <section id="tool" class="mx-auto max-w-4xl px-4 sm:px-6">
+    <div class="card p-4 sm:p-6">
+      <QrScanTool client:load />
+    </div>
+  </section>
+
+  <AdSlot name="belowTool" class="mt-10" />
+
+  <Explainer
+    slug="qrscan"
+    howToTitle="How to scan a QR code"
+    steps={[
+      { title: "Choose camera or image", body: "Start your camera for live scanning, or drop, upload, or paste an image that contains a QR code." },
+      { title: "Scan the code", body: "Point the camera at the QR code or let the tool read the image. It detects and decodes the code automatically." },
+      { title: "Use the result", body: "Copy the text, open a link in a new tab, or scan another code. The decoded content stays on your device." },
+    ]}
+    features={[
+      { title: "Live camera scanning", body: "Scan QR codes in real time with your device camera. Switch cameras when you have more than one." },
+      { title: "Image and screenshot scanning", body: "Drop an image, upload a file, or paste a screenshot. Handy when the QR code is already on your screen." },
+      { title: "Clear result actions", body: "See the decoded content, detect links, copy text, and open URLs safely in a new tab." },
+      { title: "Fast detection", body: "Uses the browser's BarcodeDetector when available, with a JavaScript fallback for wider support." },
+      { title: "Private by default", body: "Camera frames and images are processed locally in your browser. Nothing is uploaded." },
+      { title: "Works on desktop and mobile", body: "Use a webcam on desktop or your phone camera on mobile for quick scans." },
+    ]}
+    faqs={[
+      { q: "Can I scan a QR code from an image or screenshot?", a: "Yes. Upload an image, drag and drop it, or paste a screenshot. The scanner decodes the QR code in your browser." },
+      { q: "Does the scanner upload my camera feed?", a: "No. Camera frames are processed locally on your device. Nothing is sent to a server." },
+      { q: "Why does my browser ask for camera permission?", a: "Live scanning needs access to your camera. If you prefer not to grant it, you can scan from an image instead." },
+      { q: "Can it scan links?", a: "Yes. If the QR code contains a URL, the result shows an Open link action so you can visit it in a new tab." },
+      { q: "What if my browser can't access the camera?", a: "You can still use image scanning. Upload or paste a QR code image and the tool will decode it." },
+    ]}
+  />
+</ToolLayout>
