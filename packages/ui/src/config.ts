@@ -5,7 +5,7 @@ export const site = {
   author: "Samuel Ogbodo",
   portfolio: "https://devsamc.xyz",
   repo: "https://github.com/Samuel515/devsam-tools",
-  contactEmail: "", // shown on privacy pages when set
+  contactEmail: "samuel@devsamc.xyz", // shown on privacy pages when set
 };
 
 // publisherId feeds ads.txt. Nothing ad-related renders unless `enabled` is true
